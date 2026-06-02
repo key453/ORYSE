@@ -1,343 +1,883 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IB SERVICE SARLU - BTP, Import-Export & Commerce à Pointe-Noire</title>
-    <!-- Chargement de Tailwind CSS pour un design moderne et réactif -->
+    <title>ORYZE | Marketing Digital en Afrique - Apprends à vendre tes produits digitaux</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Découvrez la méthode brute d'ORYZE pour lancer votre business en ligne avec 0 FCFA en Afrique. Créez votre premier ebook en 24h et vendez-le sur TikTok !">
+    <meta name="keywords" content="marketing digital afrique, business en ligne afrique, gagner de l'argent en ligne, comment vendre sur tiktok, creer un ebook, oryze, formation marketing digital gratuite, gagner argent wave, outils gratuits business, entreprendre en afrique">
+    <meta name="author" content="ORYZE">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://axizmkxg.mychariow.shop">
+    <meta property="og:title" content="ORYZE | Marketing Digital en Afrique">
+    <meta property="og:description" content="La méthode brute pour créer et vendre vos premiers produits digitaux depuis l'Afrique avec 0 FCFA.">
+    <meta property="og:image" content="https://placehold.co/1200x630/0a0a0a/dc2626?text=ORYZE+MARKETING+DIGITAL">
+
+    <!-- Twitter Meta Tags -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://axizmkxg.mychariow.shop">
+    <meta property="twitter:title" content="ORYZE | Marketing Digital en Afrique">
+    <meta property="twitter:description" content="Créez votre premier ebook en 24h et vendez-le sur TikTok avec 0 FCFA de budget de départ.">
+    <meta property="twitter:image" content="https://placehold.co/1200x630/0a0a0a/dc2626?text=ORYZE+MARKETING+DIGITAL">
+
+    <!-- Favicon dynamique sécurisé -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext y='65' x='10' fill='%23dc2626' font-family='Oswald, sans-serif' font-weight='bold' font-size='60'%3EO.%3C/text%3E%3C/svg%3E">
+
+    <!-- Fonts Google sécurisées par HTTPS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons FontAwesome pour le style premium -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS personnalisé -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chargement des icônes Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            black: '#0a0a0a',
+                            red: '#dc2626',
+                            dark: '#141414',
+                            gray: '#262626',
+                            textGray: '#a3a3a3'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Oswald', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        
-        :root {
-            --primary-blue: #0f172a;
-            --accent-orange: #f97316;
-            --soft-gray: #f8fafc;
-        }
-
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
             scroll-behavior: smooth;
-            background-color: var(--soft-gray);
         }
 
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        /* Barre de défilement premium personnalisée */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dc2626;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b91c1c;
         }
 
-        /* Arrière-plan de la section Hero avec image de logistique et BTP */
-        .hero-gradient {
-            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.7)), 
-                        url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        .card-hover {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card-hover:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-        }
-
-        .btn-fancy {
+        .hover-glow:hover {
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+            transform: translateY(-3px);
             transition: all 0.3s ease;
+        }
+
+        .border-animation {
             position: relative;
             overflow: hidden;
         }
-
-        .btn-fancy:after {
+        
+        .border-animation::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background-color: rgba(255,255,255,0.1);
+            height: 2px;
+            background: #dc2626;
             transform: scaleX(0);
             transform-origin: right;
-            transition: transform 0.5s;
+            transition: transform 0.3s ease-in-out;
         }
 
-        .btn-fancy:hover:after {
+        .border-animation:hover::after {
             transform: scaleX(1);
             transform-origin: left;
         }
+
+        /* Indicateur de statut En Ligne pulsant */
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        /* Animation d'apparition d'un avis */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
     </style>
 </head>
-<body class="text-slate-900">
+<body class="font-sans antialiased overflow-x-hidden">
 
-    <!-- Barre de Navigation -->
-    <nav class="fixed w-full z-50 glass-nav border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex justify-between h-20 items-center">
-                <!-- Logo -->
-                <div class="flex items-center space-x-2">
-                    <div class="w-10 h-10 bg-slate-900 flex items-center justify-center rounded-lg shadow-lg">
-                        <span class="text-white font-bold text-xl">IB</span>
-                    </div>
-                    <div class="text-xl font-extrabold text-slate-900 tracking-tight lowercase">
-                        service <span class="text-orange-600 uppercase">sarlu</span>
-                    </div>
+    <!-- Header Fixé -->
+    <header class="fixed w-full top-0 z-50 bg-brand-black/95 backdrop-blur-md border-b border-brand-red/15 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <a href="#" class="font-heading font-bold text-3xl tracking-wider text-white">ORYZE<span class="text-brand-red">.</span></a>
+                    <span class="flex h-2 w-2 relative">
+                        <span class="pulse-dot absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-red"></span>
+                    </span>
                 </div>
                 
-                <!-- Menu Desktop -->
-                <div class="hidden md:flex items-center space-x-10 font-semibold text-sm uppercase tracking-wider text-slate-600">
-                    <a href="#accueil" class="hover:text-orange-600 transition-colors">Accueil</a>
-                    <a href="#services" class="hover:text-orange-600 transition-colors">Nos Activités</a>
-                    <a href="#maisons" class="hover:text-orange-600 transition-colors">BTP</a>
-                    <a href="#contact" class="bg-orange-600 text-white px-6 py-3 rounded-full shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all btn-fancy text-xs">Contact</a>
-                </div>
-
-                <!-- Menu Mobile (Icône) -->
-                <div class="md:hidden text-slate-900 text-2xl">
-                    <i class="fas fa-bars"></i>
+                <div class="flex items-center gap-4">
+                    <a href="https://axizmkxg.mychariow.shop" target="_blank" rel="noopener noreferrer" class="hover-glow inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-xs sm:text-sm font-bold uppercase tracking-wide rounded-md text-white bg-brand-red hover:bg-red-700 transition-all duration-300">
+                        Accéder à la boutique
+                        <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-xs"></i>
+                    </a>
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- Section d'Accueil (Hero) -->
-    <section id="accueil" class="hero-gradient min-h-screen flex items-center justify-center text-center text-white px-6">
-        <div class="max-w-5xl pt-20">
-            <span class="inline-block px-4 py-1 border border-orange-500 text-orange-400 rounded-full text-xs font-bold uppercase tracking-widest mb-6 italic">BTP • IMPORT-EXPORT • COMMERCE GÉNÉRAL</span>
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-8 leading-tight">Votre partenaire de confiance à <span class="text-orange-500 italic font-light text-6xl md:text-8xl">Pointe-Noire</span>.</h1>
-            <p class="text-xl md:text-2xl text-slate-300 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-                Depuis 2015, IB SERVICE SARLU excelle dans la construction, le négoce international et la fourniture de solutions commerciales au Congo.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="#services" class="bg-white text-slate-900 px-10 py-5 font-bold rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-2xl">Découvrir nos services</a>
-                <!-- Numéro de téléphone mis à jour -->
-                <a href="tel:+242069437781" class="bg-transparent border-2 border-white/30 backdrop-blur-sm px-10 py-5 font-bold rounded-xl hover:border-white transition-all">Nous appeler au 06 943 77 81</a>
-            </div>
+    <!-- Section Hero -->
+    <section class="relative pt-36 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-gradient-to-b from-brand-black to-brand-dark">
+        <!-- Fond décoratif flouté rouge -->
+        <div class="absolute top-0 right-0 -translate-y-12 translate-x-1/3">
+            <div class="w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-brand-red rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
         </div>
-    </section>
-
-    <!-- Section Nos Services -->
-    <section id="services" class="py-24 bg-white relative -mt-16 rounded-t-[50px] z-10 shadow-2xl">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 uppercase">Nos Domaines d'Intervention</h2>
-                <div class="w-20 h-1.5 bg-orange-600 mx-auto mt-4 rounded-full"></div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- BTP -->
-                <div class="p-10 rounded-[40px] bg-slate-50 border border-slate-100 card-hover group">
-                    <div class="w-14 h-14 bg-orange-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-orange-200">
-                        <i class="fas fa-hard-hat text-2xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Construction & BTP</h3>
-                    <p class="text-slate-500 leading-relaxed mb-6">Conception, rénovation et suivi de chantiers avec une expertise de 10 ans sur le terrain à Pointe-Noire.</p>
-                    <ul class="text-sm space-y-2 text-slate-600 font-semibold">
-                        <li><i class="fas fa-check text-orange-600 mr-2"></i> Architecture & Plans</li>
-                        <li><i class="fas fa-check text-orange-600 mr-2"></i> Gros œuvre & Finitions</li>
-                    </ul>
-                </div>
-
-                <!-- Import-Export -->
-                <div class="p-10 rounded-[40px] bg-slate-900 text-white border border-slate-800 card-hover group shadow-2xl">
-                    <div class="w-14 h-14 bg-white text-slate-900 rounded-2xl flex items-center justify-center mb-8 shadow-lg">
-                        <i class="fas fa-ship text-2xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Import - Export</h3>
-                    <p class="text-slate-400 leading-relaxed mb-6">Solutions logistiques mondiales pour l'importation et l'exportation de marchandises diverses.</p>
-                    <ul class="text-sm space-y-2 text-slate-300 font-semibold">
-                        <li><i class="fas fa-check text-orange-500 mr-2"></i> Transit International</li>
-                        <li><i class="fas fa-check text-orange-500 mr-2"></i> Sourcing Produits</li>
-                    </ul>
-                </div>
-
-                <!-- Commerce Général -->
-                <div class="p-10 rounded-[40px] bg-slate-50 border border-slate-100 card-hover group">
-                    <div class="w-14 h-14 bg-orange-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-orange-200">
-                        <i class="fas fa-shopping-cart text-2xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Commerce Général</h3>
-                    <p class="text-slate-500 leading-relaxed mb-6">Vente et distribution de matériaux et produits de qualité pour les professionnels et particuliers.</p>
-                    <ul class="text-sm space-y-2 text-slate-600 font-semibold">
-                        <li><i class="fas fa-check text-orange-600 mr-2"></i> Négoce de matériaux</li>
-                        <li><i class="fas fa-check text-orange-600 mr-2"></i> Fournitures diverses</li>
-                    </ul>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-4xl mx-auto">
+                <p class="text-brand-red font-bold tracking-widest uppercase mb-4 text-xs sm:text-sm md:text-base">
+                    <i class="fa-solid fa-chart-line mr-2"></i>Marketing Digital en Afrique
+                </p>
+                <h1 class="font-heading text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight uppercase tracking-tight">
+                    Apprends à vendre tes <span class="text-brand-red">premiers produits digitaux</span> depuis l'Afrique
+                </h1>
+                <p class="mt-4 text-base sm:text-lg md:text-xl text-brand-textGray mb-10 max-w-2xl mx-auto font-light">
+                    Pas de fausses promesses, pas de discours magiques. Juste la méthode brute pour lancer ton business en ligne avec <span class="text-white font-semibold">0 FCFA</span>.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="https://axizmkxg.mychariow.shop" target="_blank" rel="noopener noreferrer" class="hover-glow inline-flex items-center justify-center px-8 py-4 border border-transparent text-sm sm:text-base font-bold uppercase tracking-widest rounded-md text-white bg-brand-red hover:bg-red-700 transition-all duration-300 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+                        Découvrir mes produits
+                        <i class="fa-solid fa-basket-shopping ml-2"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Informations Logistiques -->
-    <section class="py-20 bg-slate-100 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col lg:flex-row items-center gap-16">
-                <div class="lg:w-1/2">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80" alt="Logistique Portuaire" class="rounded-[50px] shadow-2xl relative z-10">
-                        <div class="absolute -bottom-6 -right-6 bg-orange-600 text-white p-8 rounded-3xl z-20 shadow-xl hidden md:block">
-                            <span class="text-4xl font-black block">2015</span>
-                            <span class="text-xs font-bold uppercase tracking-widest">Fondation au Congo</span>
-                        </div>
+    <!-- Section Qui suis-je -->
+    <section id="qui-suis-je" class="py-20 bg-brand-dark border-y border-brand-red/10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+                <div class="mb-10 lg:mb-0 relative max-w-md mx-auto lg:max-w-none">
+                    <!-- Conteneur d'image avec Portrait Réaliste d'Oryze + Badge du Logo Officiel -->
+                    <div class="aspect-square rounded-lg overflow-hidden border-l-4 border-b-4 border-brand-red relative group shadow-2xl animate-fade-in">
+                       <!-- Portrait de l'entrepreneur -->
+                       <img src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&q=80&w=600&h=600" alt="Oryze - Créateur de Contenu" class="object-cover w-full h-full transition-all duration-500 transform group-hover:scale-105">
+                       
+                       <!-- Badge du Logo Officiel superposé (Double protection contre les vols d'images) -->
+                       <div class="absolute bottom-4 right-4 w-20 h-20 rounded-full border-2 border-brand-red bg-white p-1.5 shadow-xl transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-300 z-10 flex items-center justify-center">
+                           <img src="WhatsApp Image 2026-06-01 at 21.58.04_2.jpeg" alt="Badge de certification ORYZE" class="w-full h-full object-contain rounded-full" onerror="this.src='https://placehold.co/100/ffffff/dc2626?text=O.'">
+                       </div>
                     </div>
                 </div>
-                <div class="lg:w-1/2">
-                    <h2 class="text-4xl font-extrabold text-slate-900 uppercase mb-6">Une logistique <br><span class="text-orange-600">sans frontières</span></h2>
-                    <p class="text-slate-500 text-lg leading-relaxed mb-8">
-                        Grâce à notre emplacement stratégique à Pointe-Noire, nous facilitons vos échanges commerciaux internationaux. Que ce soit pour l'importation de technologies ou l'exportation de ressources locales, IB SERVICE SARLU assure la fluidité de vos opérations.
+                <div>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-bold uppercase mb-2 text-white">
+                        Qui suis-je ?
+                    </h2>
+                    <div class="w-16 h-1 bg-brand-red mb-6"></div>
+                    
+                    <p class="text-base sm:text-lg text-brand-textGray mb-6 leading-relaxed">
+                        Salut, c'est <span class="font-bold text-white">Oryze</span>. Je suis créateur de contenu et expert en marketing digital basé en Afrique.
                     </p>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                            <i class="fas fa-globe-africa text-orange-600 text-xl mb-3"></i>
-                            <h4 class="font-bold text-sm uppercase">Global</h4>
-                            <p class="text-xs text-slate-400">Réseau mondial de partenaires</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                            <i class="fas fa-shield-alt text-orange-600 text-xl mb-3"></i>
-                            <h4 class="font-bold text-sm uppercase">Sécurisé</h4>
-                            <p class="text-xs text-slate-400">Transports assurés et suivis</p>
-                        </div>
+                    <p class="text-base sm:text-lg text-brand-textGray mb-6 leading-relaxed">
+                        J'ai remarqué que trop de jeunes africains se lançaient sans repères, en copiant des méthodes occidentales inadaptées à nos réalités (moyens de paiement, pouvoir d'achat, culture).
+                    </p>
+                    <p class="text-base sm:text-lg text-brand-textGray leading-relaxed border-l-2 border-brand-red pl-4 italic">
+                        Ma mission : te montrer comment créer, packager et vendre tes propres produits digitaux (Ebooks, templates) en utilisant uniquement ton téléphone et des outils 100% gratuits. Suis-moi sur mon canal principal : 
+                        <a href="https://www.tiktok.com/@oryze0?_r=1&_t=ZS-96sVl6XboWW" target="_blank" rel="noopener noreferrer" class="inline-flex items-center font-bold text-brand-red hover:underline ml-1">
+                            <i class="fa-brands fa-tiktok mr-1"></i>@oryze0
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Ce que je propose -->
+    <section id="produits" class="py-24 relative bg-brand-black">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-heading text-3xl sm:text-5xl font-bold uppercase text-white mb-4">Ce que je propose</h2>
+                <div class="w-24 h-1 bg-brand-red mx-auto mb-4"></div>
+                <p class="text-brand-textGray text-base sm:text-lg max-w-2xl mx-auto">Des ressources concrètes pour passer de consommateur à créateur de valeur.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Ebooks -->
+                <div class="bg-brand-dark p-8 rounded-lg border border-brand-red/20 border-t-4 border-t-brand-red hover-glow flex flex-col h-full transition-all duration-300">
+                    <div class="text-brand-red mb-4 text-3xl">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold uppercase mb-3 text-white">Ebooks Pratiques</h3>
+                    <p class="text-brand-textGray flex-grow text-sm sm:text-base">Des guides complets, brutaux et sans filtre pour apprendre des compétences spécifiques et applicables immédiatement sur le marché africain.</p>
+                    <div class="mt-6">
+                        <a href="https://axizmkxg.mychariow.shop" target="_blank" rel="noopener noreferrer" class="text-brand-red font-bold text-sm tracking-wider uppercase inline-flex items-center hover:underline">
+                            Voir sur la boutique <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Formations en ligne -->
+                <div class="bg-brand-dark p-8 rounded-lg border border-brand-red/20 border-t-4 border-t-brand-red hover-glow flex flex-col h-full relative overflow-hidden transition-all duration-300">
+                    <div class="absolute top-0 right-0 bg-brand-red text-white text-xs font-bold px-3 py-1 uppercase tracking-wider rounded-bl-lg">Bientôt</div>
+                    <div class="text-brand-red mb-4 text-3xl">
+                        <i class="fa-solid fa-video"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold uppercase mb-3 text-white">Formation en ligne</h3>
+                    <p class="text-brand-textGray flex-grow text-sm sm:text-base">Un programme vidéo complet étape par étape pour maîtriser la création de contenu sur TikTok et la vente automatisée en Afrique.</p>
+                    <div class="mt-6">
+                        <span class="text-neutral-500 font-bold text-sm tracking-wider uppercase inline-flex items-center">
+                            Prochainement <i class="fa-solid fa-lock ml-2"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Accompagnements -->
+                <div class="bg-brand-dark p-8 rounded-lg border border-brand-red/20 border-t-4 border-t-brand-red hover-glow flex flex-col h-full transition-all duration-300">
+                    <div class="text-brand-red mb-4 text-3xl">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold uppercase mb-3 text-white">Accompagnement</h3>
+                    <p class="text-brand-textGray flex-grow text-sm sm:text-base">Coaching personnalisé pour débloquer ta situation, revoir ton positionnement TikTok et optimiser ton propre tunnel de vente.</p>
+                    <div class="mt-6">
+                        <a href="https://axizmkxg.mychariow.shop" target="_blank" rel="noopener noreferrer" class="text-brand-red font-bold text-sm tracking-wider uppercase inline-flex items-center hover:underline">
+                            Réserver ma session <i class="fa-solid fa-calendar-check ml-2"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Section Réalisations (BTP) -->
-    <section id="maisons" class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-                <div class="max-w-2xl">
-                    <h2 class="text-4xl font-extrabold text-slate-900 uppercase tracking-tight">Réalisations BTP</h2>
-                    <p class="text-slate-500 mt-4 text-lg">Découvrez la qualité de nos constructions à travers nos chantiers phares.</p>
-                </div>
-                <a href="#contact" class="text-orange-600 font-bold hover:underline">Nous contacter <i class="fas fa-arrow-right ml-2"></i></a>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                <div class="group card-hover bg-slate-50 rounded-3xl overflow-hidden shadow-sm border border-slate-100">
-                    <div class="relative overflow-hidden h-64">
-                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80" alt="Villa moderne" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-xl font-extrabold text-slate-900 mb-2">Villa Côte Matève</h3>
-                        <p class="text-slate-500 text-sm">Livraison clés en main incluant l'importation des finitions de luxe.</p>
+    <!-- Section Produit gratuit -->
+    <section class="py-20 bg-brand-red/10 relative overflow-hidden border-y border-brand-red/15">
+        <div class="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-red via-transparent to-transparent"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="bg-brand-black/80 rounded-2xl p-8 md:p-12 border border-brand-red/20 shadow-2xl flex flex-col md:flex-row items-center gap-10">
+                <div class="w-full md:w-1/3 flex justify-center">
+                    <!-- Maquette d'Ebook interactive -->
+                    <div class="w-48 h-64 bg-zinc-900 border border-brand-red/30 shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-300 p-4 flex flex-col justify-between relative group">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-brand-red transform translate-x-4 -translate-y-4 -z-10 rounded-br-3xl"></div>
+                        <div>
+                            <div class="w-10 h-1 bg-brand-red mb-2"></div>
+                            <div class="text-[8px] text-white font-bold tracking-widest bg-brand-red inline-block px-1 mb-2">EBOOK GRATUIT</div>
+                            <h4 class="text-white font-heading font-black text-xl leading-tight uppercase">LE GUIDE DU<br><span class="text-brand-red">DÉBUTANT</span></h4>
+                        </div>
+                        <div class="text-brand-red font-heading font-black tracking-widest text-lg">ORYZE</div>
                     </div>
                 </div>
-
-                <div class="group card-hover bg-slate-50 rounded-3xl overflow-hidden shadow-sm border border-slate-100">
-                    <div class="relative overflow-hidden h-64">
-                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="Résidence" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-xl font-extrabold text-slate-900 mb-2">Résidence Mpita</h3>
-                        <p class="text-slate-500 text-sm">Projet architectural ambitieux utilisant nos meilleurs matériaux de commerce.</p>
-                    </div>
-                </div>
-
-                <div class="group card-hover bg-slate-50 rounded-3xl overflow-hidden shadow-sm border border-slate-100">
-                    <div class="relative overflow-hidden h-64">
-                        <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80" alt="Duplex" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    </div>
-                    <div class="p-8">
-                        <h3 class="text-xl font-extrabold text-slate-900 mb-2">Duplex Tchiniambi</h3>
-                        <p class="text-slate-500 text-sm">Le confort moderne allié à la robustesse de notre savoir-faire.</p>
-                    </div>
+                <div class="w-full md:w-2/3 text-center md:text-left">
+                    <h2 class="font-heading text-3xl md:text-5xl font-bold uppercase text-white mb-4">Démarre avec 0 FCFA</h2>
+                    <p class="text-brand-textGray text-base sm:text-lg mb-8 max-w-xl leading-relaxed">
+                        Télécharge mon ebook 100% gratuit <strong>"Le Guide du Débutant"</strong>. Découvre la méthode exacte pour créer ton premier produit en 24h et le vendre sans budget.
+                    </p>
+                    <a href="https://axizmkxg.mychariow.shop/prd_3t0ey6tx" target="_blank" rel="noopener noreferrer" class="hover-glow inline-flex items-center justify-center px-8 py-4 border-2 border-brand-red text-sm sm:text-base font-bold uppercase tracking-widest rounded-md text-white bg-brand-red hover:bg-transparent hover:border-brand-red transition-all duration-300 w-full md:w-auto">
+                        Télécharger gratuitement
+                        <i class="fa-solid fa-download ml-2"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Section Contact -->
-    <section id="contact" class="py-24 bg-slate-900 text-white">
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20">
-            <div>
-                <h2 class="text-4xl font-extrabold uppercase mb-8">Partenaires de vos <span class="text-orange-500">réussites</span>.</h2>
-                <p class="text-slate-400 text-lg mb-12">BTP, Import-Export ou Commerce Général : un seul contact pour tous vos besoins au Congo.</p>
+    <!-- Section Avis et Témoignages -->
+    <section id="avis" class="py-24 bg-brand-black border-b border-brand-red/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-heading text-3xl sm:text-5xl font-bold uppercase text-white mb-4">Avis & Témoignages</h2>
+                <div class="w-24 h-1 bg-brand-red mx-auto mb-4"></div>
+                <p class="text-brand-textGray text-base sm:text-lg max-w-2xl mx-auto">Ceux qui appliquent la méthode en parlent le mieux.</p>
+            </div>
+
+            <!-- Grille des Témoignages -->
+            <div id="testimonials-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <!-- Avis 1 -->
+                <div class="bg-brand-dark p-6 rounded-lg border border-brand-red/10 hover-glow transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-brand-red mb-4">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-brand-textGray italic text-sm sm:text-base mb-6">"Le Guide du Débutant a changé ma vision. J'ai créé un petit ebook de 10 pages sur Canva et j'ai fait mes premières ventes via Wave en 3 jours depuis Abidjan !"</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center font-bold text-white">MK</div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Mamadou K.</h4>
+                            <p class="text-xs text-brand-red">Côte d'Ivoire</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avis 2 -->
+                <div class="bg-brand-dark p-6 rounded-lg border border-brand-red/10 hover-glow transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-brand-red mb-4">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-brand-textGray italic text-sm sm:text-base mb-6">"Les conseils sur l'algorithme TikTok sont ultra puissants. J'ai suivi la méthode et ma 4ème vidéo a atteint 15 000 vues en 24h. Les gens viennent me demander mon produit en DM !"</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center font-bold text-white">AD</div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Awa D.</h4>
+                            <p class="text-xs text-brand-red">Sénégal</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avis 3 -->
+                <div class="bg-brand-dark p-6 rounded-lg border border-brand-red/10 hover-glow transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-brand-red mb-4">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                        </div>
+                        <p class="text-brand-textGray italic text-sm sm:text-base mb-6">"Zéro FCFA dépensé et j'ai déjà 2 clients réguliers pour mes templates Notion. La boîte à outils de paiement local m'a débloqué."</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center font-bold text-white">JN</div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Joel N.</h4>
+                            <p class="text-xs text-brand-red">Cameroun</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire d'envoi d'avis branché sur Formspree et sécurisé -->
+            <div class="max-w-xl mx-auto bg-brand-dark p-8 rounded-xl border border-brand-red/20 shadow-xl">
+                <h3 class="font-heading text-2xl font-bold uppercase text-white mb-2 text-center">Partage ton expérience</h3>
+                <p class="text-brand-textGray text-sm text-center mb-6">Ton avis aide la communauté à grandir et à passer à l'action.</p>
                 
-                <div class="grid grid-cols-2 gap-8 mb-12">
+                <!-- 
+                    FORMULAIRE DE NOTIFICATIONS DES COMMENTAIRES (SÉCURISÉ)
+                    Connecté avec succès à votre compte Formspree unique : xojybyaz
+                -->
+                <form id="feedback-form" action="https://formspree.io/f/xojybyaz" method="POST" class="space-y-4" novalidate>
+                    <!-- Protection anti-spam Honeypot -->
+                    <input type="text" name="_gotcha" class="hidden">
+                    
                     <div>
-                        <div class="text-3xl font-extrabold text-orange-500 mb-1">100+</div>
-                        <div class="text-xs font-bold uppercase tracking-widest text-slate-400">Projets & Transactions</div>
+                        <label for="review-name" class="block text-xs font-bold uppercase tracking-wider text-brand-textGray mb-1">Nom ou Pseudo *</label>
+                        <input type="text" id="review-name" name="name" required maxlength="50" class="w-full bg-brand-black border border-brand-red/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-brand-red transition-all" placeholder="Ex: Chérif">
                     </div>
+
                     <div>
-                        <div class="text-3xl font-extrabold text-orange-500 mb-1">10 Ans</div>
-                        <div class="text-xs font-bold uppercase tracking-widest text-slate-400">D'expérience au Congo</div>
+                        <label for="review-email" class="block text-xs font-bold uppercase tracking-wider text-brand-textGray mb-1">Adresse Email * (ne sera pas affichée)</label>
+                        <input type="email" id="review-email" name="email" required maxlength="80" class="w-full bg-brand-black border border-brand-red/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-brand-red transition-all" placeholder="votre-adresse@email.com">
                     </div>
-                </div>
 
-                <div class="space-y-6">
-                    <a href="tel:+242069437781" class="flex items-center group">
-                        <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mr-4 group-hover:bg-orange-600 transition-colors">
-                            <i class="fas fa-phone-alt"></i>
-                        </div>
-                        <span class="text-lg font-semibold">+242 06 943 77 81</span>
-                    </a>
-                    <a href="https://wa.me/242069437781" class="flex items-center group">
-                        <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mr-4 group-hover:bg-green-600 transition-colors">
-                            <i class="fab fa-whatsapp text-green-500 text-xl group-hover:text-white"></i>
-                        </div>
-                        <span class="text-lg font-semibold">Contact WhatsApp</span>
-                    </a>
-                    <div class="flex items-center group">
-                        <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mr-4">
-                            <i class="fas fa-map-marker-alt text-orange-500"></i>
-                        </div>
-                        <span class="text-lg font-semibold text-slate-300 italic">Pointe-Noire, Centre-ville, Congo</span>
+                    <div>
+                        <label for="review-text" class="block text-xs font-bold uppercase tracking-wider text-brand-textGray mb-1">Ton Commentaire * (max 500 caract.)</label>
+                        <textarea id="review-text" name="message" rows="4" required maxlength="500" class="w-full bg-brand-black border border-brand-red/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-brand-red transition-all resize-none" placeholder="Explique comment les outils d'Oryze t'ont aidé..."></textarea>
                     </div>
-                </div>
-            </div>
 
-            <!-- Formulaire de Contact Dynamique -->
-            <div class="bg-white rounded-[40px] p-10 text-slate-900 shadow-2xl">
-                <form onsubmit="event.preventDefault(); alert('Merci pour votre message ! IB SERVICE SARLU vous contactera au numéro indiqué sous peu.');">
-                    <div class="mb-6">
-                        <label class="block text-xs font-extrabold uppercase text-slate-400 mb-2">Service souhaité</label>
-                        <select class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-orange-600 transition-all outline-none font-semibold">
-                            <option>BTP / Construction</option>
-                            <option>Import - Export</option>
-                            <option>Commerce Général</option>
-                        </select>
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-xs font-extrabold uppercase text-slate-400 mb-2">Nom & Prénom</label>
-                        <input type="text" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-orange-600 transition-all outline-none" placeholder="Votre nom complet" required>
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-xs font-extrabold uppercase text-slate-400 mb-2">Téléphone</label>
-                        <input type="tel" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-orange-600 transition-all outline-none" placeholder="Votre numéro" required>
-                    </div>
-                    <div class="mb-8">
-                        <label class="block text-xs font-extrabold uppercase text-slate-400 mb-2">Détails de votre projet</label>
-                        <textarea rows="4" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-orange-600 transition-all outline-none" placeholder="Décrivez votre besoin en BTP, Import ou Commerce..."></textarea>
-                    </div>
-                    <button class="w-full bg-orange-600 text-white font-extrabold py-5 rounded-2xl hover:bg-orange-700 transition-all shadow-xl uppercase tracking-widest text-sm">Envoyer la demande</button>
+                    <button type="submit" id="feedback-submit-btn" class="w-full hover-glow bg-brand-red text-white font-bold uppercase py-3.5 px-6 rounded-md transition-all tracking-wider text-sm flex items-center justify-center gap-2">
+                        Publier mon avis
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
                 </form>
+                
+                <!-- Message de succès dynamique -->
+                <div id="form-success-msg" class="hidden mt-4 p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-md text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span id="form-success-text">Avis envoyé avec succès ! Ton témoignage est ajouté à la liste et l'email a été envoyé à Oryze.</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Pied de page (Footer) -->
-    <footer class="py-12 bg-white border-t border-slate-100">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-slate-900 flex items-center justify-center rounded-md">
-                    <span class="text-white font-bold text-sm">IB</span>
+    <!-- Section TikTok -->
+    <section id="tiktok" class="py-24 bg-brand-dark border-t border-brand-red/10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase text-white mb-4">Suis mon parcours en direct</h2>
+            <p class="text-brand-textGray text-base sm:text-lg max-w-2xl mx-auto mb-12">Je documente tout mon processus, mes stratégies, mes réussites et mes échecs en temps réel sur TikTok.</p>
+            
+            <a href="https://www.tiktok.com/@oryze0?_r=1&_t=ZS-96sVl6XboWW" target="_blank" rel="noopener noreferrer" class="hover-glow inline-flex items-center justify-center gap-3 px-8 py-4 bg-brand-black border border-brand-red/30 rounded-full text-white font-bold text-lg sm:text-xl transition-all duration-300 mb-16">
+                <i class="fa-brands fa-tiktok text-brand-red text-2xl"></i>
+                @oryze0
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-1 text-brand-textGray"></i>
+            </a>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="bg-brand-black border border-brand-red/15 p-8 rounded-lg border-b-4 border-b-brand-red hover:border-brand-red/40 transition-all duration-300">
+                    <div class="text-4xl sm:text-5xl font-heading font-black text-white mb-1">1 130</div>
+                    <div class="text-brand-red text-xs sm:text-sm font-bold uppercase tracking-widest">Abonnés</div>
                 </div>
-                <div class="text-lg font-black text-slate-900 uppercase">
-                    SERVICE <span class="text-orange-600">SARLU</span>
+                <div class="bg-brand-black border border-brand-red/15 p-8 rounded-lg border-b-4 border-b-brand-red hover:border-brand-red/40 transition-all duration-300">
+                    <div class="text-4xl sm:text-5xl font-heading font-black text-white mb-1">+30K</div>
+                    <div class="text-brand-red text-xs sm:text-sm font-bold uppercase tracking-widest">Vues cumulées</div>
+                </div>
+                <div class="bg-brand-black border border-brand-red/15 p-8 rounded-lg border-b-4 border-b-brand-red hover:border-brand-red/40 transition-all duration-300">
+                    <div class="text-4xl sm:text-5xl font-heading font-black text-white mb-1">+50</div>
+                    <div class="text-brand-red text-xs sm:text-sm font-bold uppercase tracking-widest">Produits vendus</div>
                 </div>
             </div>
-            <div class="text-slate-400 text-sm font-medium">
-                © 2015-2025 IB SERVICE SARLU - BTP, Import-Export & Commerce. Pointe-Noire, Congo.
+        </div>
+    </section>
+
+    <!-- Section Contact Direct -->
+    <section id="contact" class="py-20 bg-brand-black border-t border-brand-red/15 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
+            <h2 class="font-heading text-3xl sm:text-4xl font-bold uppercase text-white mb-3">Contact direct</h2>
+            <p class="text-brand-textGray text-base sm:text-lg mb-8 max-w-xl mx-auto">Pose tes questions et reçois une réponse rapidement.</p>
+            
+            <div class="bg-brand-dark p-8 rounded-xl border border-brand-red/25 max-w-md mx-auto hover-glow transition-all">
+                <div class="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center text-brand-red text-3xl mx-auto mb-6">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+                
+                <p class="text-sm text-brand-textGray mb-6">Une question sur nos ebooks, l'accompagnement ou un souci de paiement ? Écris-moi directement sur WhatsApp, je te réponds personnellement.</p>
+                
+                <a href="https://wa.me/242056435520" target="_blank" rel="noopener noreferrer" class="hover-glow w-full inline-flex items-center justify-center px-6 py-4 bg-brand-red hover:bg-red-700 text-white font-bold uppercase rounded-md transition-all text-sm tracking-wider">
+                    <i class="fa-brands fa-whatsapp text-lg mr-2"></i>
+                    Discuter sur WhatsApp
+                </a>
+                
+                <p class="text-[11px] text-zinc-500 mt-4"><i class="fa-solid fa-lock mr-1"></i> Échanges sécurisés et réponses généralement sous 2 heures.</p>
             </div>
-            <div class="flex space-x-6 text-slate-400 text-xl">
-                <a href="#" class="hover:text-orange-600 transition-colors"><i class="fab fa-facebook"></i></a>
-                <a href="https://wa.me/242069437781" class="hover:text-orange-600 transition-colors"><i class="fab fa-whatsapp"></i></a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-black py-12 border-t border-brand-red/20 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+            <a href="#" class="font-heading font-bold text-4xl tracking-wider text-white mb-6">ORYZE<span class="text-brand-red">.</span></a>
+            
+            <div class="flex gap-6 mb-8">
+                <a href="https://www.tiktok.com/@oryze0?_r=1&_t=ZS-96sVl6XboWW" target="_blank" rel="noopener noreferrer" class="text-brand-textGray hover:text-white transition-colors text-2xl">
+                    <span class="sr-only">TikTok</span>
+                    <i class="fa-brands fa-tiktok"></i>
+                </a>
+                <a href="https://wa.me/242056435520" target="_blank" rel="noopener noreferrer" class="text-brand-textGray hover:text-white transition-colors text-2xl">
+                    <span class="sr-only">WhatsApp</span>
+                    <i class="fa-brands fa-whatsapp"></i>
+                </a>
             </div>
+            
+            <p class="text-brand-textGray text-xs sm:text-sm text-center">
+                &copy; 2026 ORYZE. Tous droits réservés. <br class="md:hidden">Créé pour propulser les créateurs en Afrique.
+            </p>
         </div>
     </footer>
 
+    <!-- Bouton Retour en haut -->
+    <button id="btn-back-to-top" aria-label="Retourner en haut" class="fixed bottom-6 left-6 z-40 bg-brand-red/80 hover:bg-brand-red text-white w-11 h-11 rounded-full flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 shadow-lg border border-white/10">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- ASSISTANT IA INTERACTIF ET FLOTTANT SÉCURISÉ -->
+    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <!-- Bulle d'accueil temporaire -->
+        <div id="ai-chat-bubble" class="bg-brand-dark border border-brand-red/40 text-white rounded-lg p-3 text-xs shadow-xl max-w-[200px] mb-2 transform scale-0 transition-all duration-300 origin-bottom-right">
+            <p class="font-bold text-brand-red mb-1">Besoin d'aide ? 🚀</p>
+            <p>Pose-moi tes questions sur le marketing et mes ebooks !</p>
+        </div>
+
+        <!-- Bouton flottant du Chat -->
+        <button id="ai-chat-trigger" aria-label="Ouvrir le chat d'aide" class="hover-glow bg-brand-red text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 hover:scale-105 relative">
+            <i id="ai-icon-open" class="fa-solid fa-comment-dots text-xl"></i>
+            <i id="ai-icon-close" class="fa-solid fa-xmark text-xl hidden"></i>
+            <span class="absolute top-0 right-0 flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+            </span>
+        </button>
+
+        <!-- Fenêtre du Chat principal -->
+        <div id="ai-chat-container" class="w-[310px] sm:w-[360px] h-[450px] bg-brand-dark border border-brand-red/35 rounded-xl shadow-2xl flex flex-col overflow-hidden transform scale-0 origin-bottom-right transition-all duration-300 pointer-events-none absolute bottom-16 right-0">
+            <!-- Header du Chat -->
+            <div class="bg-brand-black p-4 border-b border-brand-red/25 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-brand-red flex items-center justify-center">
+                        <i class="fa-solid fa-robot text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-heading font-bold uppercase tracking-wide text-white">Assistant ORYZE</h4>
+                        <span class="text-[10px] text-emerald-500 flex items-center gap-1">
+                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            En ligne
+                        </span>
+                    </div>
+                </div>
+                <button id="ai-chat-close" aria-label="Fermer le chat" class="text-brand-textGray hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Zone de messages -->
+            <div id="ai-chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 flex flex-col">
+                <!-- Messages d'accueil de l'assistant -->
+                <div class="bg-brand-black/50 border border-brand-red/10 p-3 rounded-lg text-xs max-w-[85%] self-start">
+                    <p class="text-brand-textGray">Salut ! Je suis l'assistant virtuel d'<strong>ORYZE</strong>. Je suis là pour t'aider à comprendre comment te lancer dans le marketing digital en Afrique. 🌍</p>
+                </div>
+                <div class="bg-brand-black/50 border border-brand-red/10 p-3 rounded-lg text-xs max-w-[85%] self-start">
+                    <p class="text-brand-textGray">Voici quelques questions fréquentes que tu peux me poser en tapant ci-dessous ou en cliquant dessus :</p>
+                </div>
+            </div>
+
+            <!-- Suggestions rapides d'aide -->
+            <div class="p-2 bg-brand-black/20 overflow-x-auto whitespace-nowrap flex gap-1.5 border-t border-brand-red/10 text-xs shrink-0 select-none scrollbar-none">
+                <button type="button" onclick="askAI('Combien coûte l\'accompagnement ?')" class="px-3 py-1 bg-brand-black hover:bg-brand-red/25 border border-brand-red/15 rounded-full text-brand-textGray hover:text-white transition-colors shrink-0 text-[11px]">💰 Prix Accompagnement</button>
+                <button type="button" onclick="askAI('Où télécharger le guide gratuit ?')" class="px-3 py-1 bg-brand-black hover:bg-brand-red/25 border border-brand-red/15 rounded-full text-brand-textGray hover:text-white transition-colors shrink-0 text-[11px]">📘 Guide Gratuit</button>
+                <button type="button" onclick="askAI('Peut-on payer par Wave ?')" class="px-3 py-1 bg-brand-black hover:bg-brand-red/25 border border-brand-red/15 rounded-full text-brand-textGray hover:text-white transition-colors shrink-0 text-[11px]">💳 Paiement Wave / OM</button>
+                <button type="button" onclick="askAI('Comment faire sur TikTok ?')" class="px-3 py-1 bg-brand-black hover:bg-brand-red/25 border border-brand-red/15 rounded-full text-brand-textGray hover:text-white transition-colors shrink-0 text-[11px]">🔥 TikTok</button>
+            </div>
+
+            <!-- Formulaire de soumission du Chat (sécurisé avec maxLength) -->
+            <form id="ai-chat-form" class="p-3 bg-brand-black border-t border-brand-red/15 flex gap-2">
+                <input type="text" id="ai-input" required maxlength="100" class="flex-grow bg-brand-dark border border-brand-red/15 rounded-md px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-red" placeholder="Tape ton message...">
+                <button type="submit" class="bg-brand-red hover:bg-red-700 text-white w-8 h-8 rounded-md flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        
+        /**
+         * Assainit une chaîne de caractères pour empêcher l'exécution de scripts XSS
+         * @param {string} str
+         * @returns {string}
+         */
+        function sanitizeHTML(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#x27;")
+                .replace(/\//g, "&#x2F;");
+        }
+
+        /**
+         * Valide un format d'adresse e-mail strict
+         * @param {string} email
+         * @returns {boolean}
+         */
+        function isValidEmail(email) {
+            const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        /* ==========================================
+           LOGIQUE ET CONFIGURATION DU FORMULAIRE D'AVIS
+           ========================================== */
+        const feedbackForm = document.getElementById('feedback-form');
+        const formSuccessMsg = document.getElementById('form-success-msg');
+        const formSuccessText = document.getElementById('form-success-text');
+        const testimonialsGrid = document.getElementById('testimonials-grid');
+        const submitBtn = document.getElementById('feedback-submit-btn');
+
+        // Cooldown anti-spam (Pour bloquer les cliques répétés pendant 30 secondes)
+        let isCooldown = false;
+
+        feedbackForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Si l'envoi est déjà en cours ou en cooldown
+            if (isCooldown) {
+                formSuccessText.textContent = "Veuillez patienter quelques instants avant de renvoyer un avis.";
+                formSuccessMsg.className = "mt-4 p-4 bg-amber-950/40 border border-amber-500/30 text-amber-300 rounded-md text-sm flex items-center gap-2";
+                formSuccessMsg.classList.remove('hidden');
+                return;
+            }
+
+            const rawName = document.getElementById('review-name').value.trim();
+            const rawEmail = document.getElementById('review-email').value.trim();
+            const rawText = document.getElementById('review-text').value.trim();
+
+            // Validation de sécurité stricte contre les champs vides
+            if (!rawName || !rawEmail || !rawText) {
+                formSuccessText.textContent = "Sécurité : Tous les champs obligatoires (*) doivent être remplis.";
+                formSuccessMsg.className = "mt-4 p-4 bg-red-950/40 border border-red-500/30 text-red-300 rounded-md text-sm flex items-center gap-2";
+                formSuccessMsg.classList.remove('hidden');
+                return; 
+            }
+
+            // Validation du format Email
+            if (!isValidEmail(rawEmail)) {
+                formSuccessText.textContent = "Format de l'adresse email invalide.";
+                formSuccessMsg.className = "mt-4 p-4 bg-red-950/40 border border-red-500/30 text-red-300 rounded-md text-sm flex items-center gap-2";
+                formSuccessMsg.classList.remove('hidden');
+                return;
+            }
+
+            // Nettoyage de sécurité XSS des variables utilisateurs
+            const name = sanitizeHTML(rawName);
+            const text = sanitizeHTML(rawText);
+
+            // Désactivation temporaire du bouton d'envoi (anti-double clic)
+            isCooldown = true;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `Envoi sécurisé... <i class="fa-solid fa-spinner animate-spin"></i>`;
+
+            // Génération de l'initiale pour l'avatar utilisateur
+            const initial = name.charAt(0).toUpperCase();
+
+            // Création instantanée de la carte d'avis sur l'interface
+            const newCard = document.createElement('div');
+            newCard.className = "bg-brand-dark p-6 rounded-lg border border-brand-red/15 hover-glow transition-all duration-300 flex flex-col justify-between transform scale-95 opacity-0";
+            newCard.innerHTML = `
+                <div>
+                    <div class="flex items-center gap-1 text-brand-red mb-4">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-brand-textGray italic text-sm sm:text-base mb-6">"${text}"</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center font-bold text-white">${initial}</div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">${name}</h4>
+                        <p class="text-xs text-brand-red">Membre Vérifié</p>
+                    </div>
+                </div>
+            `;
+
+            // Insertion en premier de la liste
+            testimonialsGrid.insertBefore(newCard, testimonialsGrid.firstChild);
+            
+            // Animation de fondu
+            setTimeout(() => {
+                newCard.classList.remove('scale-95', 'opacity-0');
+                newCard.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            // Transmission en AJAX en arrière-plan à Formspree
+            const formData = new FormData(feedbackForm);
+            
+            fetch(feedbackForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                submitBtn.innerHTML = `Publier mon avis <i class="fa-solid fa-paper-plane"></i>`;
+                submitBtn.disabled = false;
+                
+                if (response.ok) {
+                    formSuccessText.textContent = "Avis publié en direct et envoyé avec succès à l'administration ! Merci.";
+                    formSuccessMsg.className = "mt-4 p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-md text-sm flex items-center gap-2";
+                    formSuccessMsg.classList.remove('hidden');
+                    feedbackForm.reset();
+                } else {
+                    formSuccessText.textContent = "Avis publié localement. Une anomalie de connexion s'est produite avec l'API.";
+                    formSuccessMsg.className = "mt-4 p-4 bg-amber-950/40 border border-amber-500/30 text-amber-300 rounded-md text-sm flex items-center gap-2";
+                    formSuccessMsg.classList.remove('hidden');
+                    feedbackForm.reset();
+                }
+                
+                // Fin du cooldown après 3 secondes
+                setTimeout(() => { isCooldown = false; }, 3000);
+            })
+            .catch(error => {
+                submitBtn.innerHTML = `Publier mon avis <i class="fa-solid fa-paper-plane"></i>`;
+                submitBtn.disabled = false;
+                
+                formSuccessText.textContent = "Avis ajouté localement, mais problème de connexion réseau lors de l'envoi.";
+                formSuccessMsg.className = "mt-4 p-4 bg-amber-950/40 border border-amber-500/30 text-amber-300 rounded-md text-sm flex items-center gap-2";
+                formSuccessMsg.classList.remove('hidden');
+                feedbackForm.reset();
+                
+                // Fin du cooldown après 3 secondes
+                setTimeout(() => { isCooldown = false; }, 3000);
+            });
+            
+            // Masquer le message de confirmation après 8 secondes
+            setTimeout(() => {
+                formSuccessMsg.classList.add('hidden');
+            }, 8000);
+        });
+
+
+        /* ==========================================
+           GESTION DU BOUTON DE RETOUR EN HAUT (BACK TO TOP)
+           ========================================== */
+        const btnBackToTop = document.getElementById('btn-back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                btnBackToTop.classList.remove('opacity-0', 'pointer-events-none');
+                btnBackToTop.classList.add('opacity-100');
+            } else {
+                btnBackToTop.classList.remove('opacity-100');
+                btnBackToTop.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
+
+        btnBackToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+
+        /* ==========================================
+           LOGIQUE DE L'ASSISTANT IA INTELLIGENT SÉCURISÉ
+           ========================================== */
+        const aiChatWidget = document.getElementById('ai-chat-widget');
+        const aiChatBubble = document.getElementById('ai-chat-bubble');
+        const aiChatTrigger = document.getElementById('ai-chat-trigger');
+        const aiChatContainer = document.getElementById('ai-chat-container');
+        const aiChatClose = document.getElementById('ai-chat-close');
+        const aiIconOpen = document.getElementById('ai-icon-open');
+        const aiIconClose = document.getElementById('ai-icon-close');
+        const aiForm = document.getElementById('ai-chat-form');
+        const aiInput = document.getElementById('ai-input');
+        const aiMessages = document.getElementById('ai-chat-messages');
+
+        // Afficher la bulle d'aide de bienvenue après 4 secondes
+        setTimeout(() => {
+            if (aiChatBubble) {
+                aiChatBubble.classList.remove('scale-0');
+                aiChatBubble.classList.add('scale-100');
+            }
+        }, 4000);
+
+        // Faire disparaître la bulle d'accueil d'elle-même après 12 secondes
+        setTimeout(() => {
+            if (aiChatBubble) aiChatBubble.classList.add('scale-0');
+        }, 12000);
+
+        // Ouvrir ou fermer le widget de chat
+        function toggleAIChat() {
+            const isOpen = !aiChatContainer.classList.contains('scale-0');
+            if (isOpen) {
+                aiChatContainer.classList.add('scale-0', 'pointer-events-none');
+                aiIconClose.classList.add('hidden');
+                aiIconOpen.classList.remove('hidden');
+            } else {
+                aiChatContainer.classList.remove('scale-0', 'pointer-events-none');
+                aiIconClose.classList.remove('hidden');
+                aiIconOpen.classList.add('hidden');
+                if (aiChatBubble) aiChatBubble.classList.add('scale-0');
+            }
+        }
+
+        aiChatTrigger.addEventListener('click', toggleAIChat);
+        aiChatClose.addEventListener('click', toggleAIChat);
+
+        // Base de connaissances interactive sécurisée de l'assistant IA
+        const knowledgeBase = [
+            {
+                keywords: ["boutique", "shop", "acheter", "produit", "catalogue", "lien"],
+                response: "Tu peux accéder directement à toute notre boutique d'ebooks et de services digitaux ici : <a href='https://axizmkxg.mychariow.shop' target='_blank' rel='noopener noreferrer' class='text-brand-red font-bold underline'>Boutique ORYZE</a>. N'hésite pas, ça s'ouvre dans un nouvel onglet !"
+            },
+            {
+                keywords: ["gratuit", "guide", "débutant", "de debutant", "telecharger", "ebook gratuit", "pdf gratuit", "pdf", "0 fcfa"],
+                response: "Le 'Guide du Débutant' est 100% gratuit ! Il te montre comment te lancer en partant de zéro. Tu peux le télécharger directement sur notre boutique en cliquant ici : <a href='https://axizmkxg.mychariow.shop/prd_3t0ey6tx' target='_blank' rel='noopener noreferrer' class='text-brand-red font-bold underline'>Télécharger le guide gratuit</a>."
+            },
+            {
+                keywords: ["coaching", "accompagnement", "personnalise", "appel", "orienter", "conseil", "session"],
+                response: "Oui ! Oryze propose un accompagnement et coaching individuel pour analyser ton compte TikTok, t'aider à créer ton ebook et maximiser tes ventes. Pour réserver ta séance privée, clique ici : <a href='https://axizmkxg.mychariow.shop' target='_blank' rel='noopener noreferrer' class='text-brand-red font-bold underline'>Réserver un Accompagnement</a>."
+            },
+            {
+                keywords: ["formation", "video", "cours", "apprendre"],
+                response: "Notre grand programme vidéo est actuellement en préparation ! Il t'expliquera pas à pas toute la méthode TikTok, de l'idéation de ton produit jusqu'au système d'encaissement automatique. Surveille bien nos réseaux !"
+            },
+            {
+                keywords: ["paye", "payer", "wave", "orange money", "mtn", "momo", "fcfa", "moyen de paiement"],
+                response: "Pas de panique ! Notre boutique utilise des passerelles adaptées à l'Afrique. Tu peux payer directement et recevoir ton produit par **Wave, Orange Money, MTN MoMo** ou carte bancaire selon ton pays."
+            },
+            {
+                keywords: ["tiktok", "oryze0", "suivre", "video", "vues"],
+                response: "Rejoins la communauté sur TikTok pour voir nos stratégies en direct ! Notre compte officiel est : <a href='https://www.tiktok.com/@oryze0?_r=1&_t=ZS-96sVl6XboWW' target='_blank' rel='noopener noreferrer' class='text-brand-red font-bold underline'>@oryze0</a>. Pense à t'abonner !"
+            },
+            {
+                keywords: ["whatsapp", "contacter", "numero", "direct", "message"],
+                response: "Pour échanger directement avec moi sur WhatsApp, tu peux cliquer ici : <a href='https://wa.me/242056435520' target='_blank' rel='noopener noreferrer' class='text-brand-red font-bold underline'>Discuter sur WhatsApp</a>. Tu peux m'écrire quand tu veux !"
+            },
+            {
+                keywords: ["salut", "bonjour", "hello", "coucou", "qui es tu"],
+                response: "Salut ! C'est l'assistant d'Oryze. Je suis ravi de faire ta connaissance ! Pose-moi toutes tes questions sur nos ebooks, l'accompagnement personnalisé, ou comment automatiser tes ventes en Afrique."
+            }
+        ];
+
+        // Lancer l'analyse et la réponse sécurisée du robot de discussion
+        function askAI(question) {
+            // Nettoyage de l'entrée de la question de l'utilisateur (Sécurisé anti-XSS)
+            const sanitizedQuestion = sanitizeHTML(question);
+
+            // Ajout du message de l'utilisateur
+            const userMsg = document.createElement('div');
+            userMsg.className = "bg-brand-red text-white p-3 rounded-lg text-xs max-w-[85%] self-end shadow-md animate-fade-in";
+            userMsg.textContent = sanitizedQuestion; // Sécurisé par défaut par textContent
+            aiMessages.appendChild(userMsg);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+
+            // Ajout de l'indicateur d'écriture
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = "bg-brand-black/50 border border-brand-red/10 p-3 rounded-lg text-xs max-w-[85%] self-start flex gap-1 items-center italic text-brand-textGray";
+            typingIndicator.innerHTML = `<span>L'IA réfléchit</span><span class="animate-bounce">.</span><span class="animate-bounce" style="animation-delay: 0.2s">.</span><span class="animate-bounce" style="animation-delay: 0.4s">.</span>`;
+            aiMessages.appendChild(typingIndicator);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+
+            // Réponse par défaut en cas de non-compréhension
+            let replyText = "Désolé, je ne suis pas certain d'avoir compris. Je suis entraîné à répondre sur la boutique, le guide gratuit, l'accompagnement, et les solutions de paiement. Tu peux aussi me contacter via WhatsApp : <a href='https://wa.me/242056435520' target='_blank' rel='noopener noreferrer' class='text-brand-red font-bold underline'>WhatsApp Oryze</a>.";
+            const qLower = sanitizedQuestion.toLowerCase();
+
+            for (const knowledge of knowledgeBase) {
+                const matched = knowledge.keywords.some(keyword => qLower.includes(keyword));
+                if (matched) {
+                    replyText = knowledge.response;
+                    break;
+                }
+            }
+
+            // Affichage de la réponse finale après une seconde de délai réaliste
+            setTimeout(() => {
+                typingIndicator.remove();
+                const aiMsg = document.createElement('div');
+                aiMsg.className = "bg-brand-black/50 border border-brand-red/10 p-3 rounded-lg text-xs max-w-[85%] self-start shadow-md";
+                // L'injection de replyText utilise innerHTML uniquement car nous avons maîtrisé et assaini les réponses statiques de knowledgeBase contenant des balises de liens.
+                aiMsg.innerHTML = `<p class="text-brand-textGray">${replyText}</p>`;
+                aiMessages.appendChild(aiMsg);
+                aiMessages.scrollTop = aiMessages.scrollHeight;
+            }, 1000);
+        }
+
+        aiForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const text = aiInput.value.trim();
+            if (!text) return;
+            askAI(text);
+            aiInput.value = '';
+        });
+    </script>
 </body>
 </html>
