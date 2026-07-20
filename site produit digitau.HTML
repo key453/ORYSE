@@ -1,685 +1,706 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  CheckCircle2, 
-  ChevronRight, 
-  Zap, 
-  Brain, 
-  Target, 
-  BookOpen, 
-  Sun, 
-  Calendar, 
-  MessageCircle, 
-  X, 
-  Send, 
-  Loader2,
-  ShieldAlert,
-  Star,
-  Phone,
-  Quote,
-  Sparkles
-} from 'lucide-react';
-
-// --- CONSTANTES ---
-const THEME = {
-  primary: 'bg-yellow-500',
-  primaryHover: 'hover:bg-yellow-400',
-  textPrimary: 'text-yellow-500',
-  dark: 'bg-slate-900',
-  darker: 'bg-slate-950',
-};
-
-const PAYMENT_LINK = "https://axizmkxg.mychariow.shop/prd_9cc2zy2j";
-const PHONE_NUMBER = "+242056435520";
-
-// --- API GEMINI (IA) ---
-// REGLE CRUCIALLE : Laissez cette variable strictement vide (""). 
-// L'environnement de test injectera lui-même la bonne clé de manière transparente au runtime.
-const apiKey = ""; 
-
-const systemPrompt = `Tu es l'assistant virtuel officiel de "L'Académie des Bâtisseurs". 
-Ton rôle est d'accompagner les visiteurs avec bienveillance et de les motiver à surmonter les blocages du quotidien (procrastination, distractions des réseaux sociaux, manque de discipline, perte d'attention) en adoptant des habitudes de vie saines (sport, sommeil de qualité, lecture, planification des études).
-Tu réponds à leurs questions sur le pack "Le Réveil du Bâtisseur : De la Pulsion à la Puissance" et tu les encourages à l'acquérir pour structurer leur réussite.
-
-Détails essentiels du pack :
-- Prix : 4 999 FCFA (s'adapte à la devise locale).
-- Contenu : 
-  1. Ebook principal "Le Réveil du Bâtisseur" : Guide d'autodiscipline, de concentration et de saines habitudes.
-  2. Bonus 1 "La Routine Matinale du Bâtisseur" : Techniques pour démarrer fort, faire du sport et étudier sereinement chaque matin.
-  3. Bonus 2 "Le Tracker des 30 Jours" : Outil de suivi visuel pour valider ses efforts quotidiens (devoirs, lecture, sport).
-- Contact WhatsApp de l'équipe : +242 056435520.
-
-Consignes de communication :
-- Adopte un ton dynamique, inspirant, digne, respectueux et très axé sur le développement sain du potentiel.
-- Sois clair, concis et direct.
-- Reste toujours dans un cadre sain, positif et encourageant (sport, études, concentration, saines habitudes). Redirige toujours poliment vers l'autodiscipline positive si la discussion dévie.`;
-
-const fetchGeminiResponse = async (userMessage, history) => {
-  const maxRetries = 5;
-  let delay = 1000;
-  
-  // URL de l'API Gemini utilisant la constante apiKey sans validation intermédiaire
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-  const promptContext = `Historique:\n${history.map(m => `${m.sender === 'user' ? 'Client' : 'IA'}: ${m.text}`).join('\n')}\n\nClient: ${userMessage}\nIA:`;
-
-  const payload = {
-    contents: [{ parts: [{ text: promptContext }] }],
-    systemInstruction: { parts: [{ text: systemPrompt }] }
-  };
-
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const response = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.candidates && data.candidates[0].content.parts[0].text) {
-        return data.candidates[0].content.parts[0].text;
-      }
-      throw new Error("Réponse invalide de l'API");
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
-      await new Promise(res => setTimeout(res, delay));
-      delay *= 2; // Attente exponentielle
-    }
-  }
-};
-
-export default function App() {
-  return (
-    <div className={`min-h-screen text-slate-200 font-sans ${THEME.dark}`}>
-      {/* NAVIGATION */}
-      <nav className={`${THEME.darker} p-4 sticky top-0 z-40 border-b border-slate-800 shadow-md backdrop-blur-md bg-opacity-90`}>
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <ShieldAlert className={THEME.textPrimary} size={32} />
-            <span className="text-xl md:text-2xl font-bold tracking-wider text-white">L'Académie des Bâtisseurs</span>
-          </div>
-          <button 
-            onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
-            className="hidden md:flex bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors border border-slate-700"
-          >
-            Obtenir le pack
-          </button>
-        </div>
-      </nav>
-
-      <main>
-        <HeroSection />
-        <PainPointsSection />
-        <ValuePropositionSection />
-        <ProductsSection />
-        <ReviewsSection />
-        <PricingSection />
-        <ContactSection />
-      </main>
-
-      <Chatbot />
-      
-      {/* FOOTER */}
-      <footer className={`${THEME.darker} py-12 text-center text-slate-500 text-sm border-t border-slate-800`}>
-        <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">
-          <ShieldAlert className="text-slate-700 mb-4" size={40} />
-          <p className="mb-2 text-base">&copy; {new Date().getFullYear()} L'Académie des Bâtisseurs. Tous droits réservés.</p>
-          <p className="text-xs max-w-md mx-auto">
-            Ce site ne fait pas partie du site web Facebook ou de Facebook Inc. De plus, ce site n'est en aucun cas approuvé par Facebook. FACEBOOK est une marque déposée de FACEBOOK, Inc.
-          </p>
-          <div className="mt-6 flex space-x-4 items-center justify-center">
-            <span className="flex items-center"><Zap size={14} className="mr-1 text-yellow-500"/> Paiement 100% Sécurisé</span>
-            <span className="flex items-center"><Zap size={14} className="mr-1 text-yellow-500"/> Accès Immédiat après paiement</span>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-// ==========================================
-// SECTIONS
-// ==========================================
-
-function HeroSection() {
-  const handleScrollToPricing = () => {
-    document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' });
-  };
-
-  return (
-    <section className="relative w-full pt-16 pb-24 px-4 overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-yellow-500/5 rounded-full blur-[100px] pointer-events-none"></div>
-      
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
-        <div className="text-left flex flex-col items-start">
-          <div className="inline-block px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-sm font-bold mb-6 animate-pulse flex items-center shadow-[0_0_15px_rgba(234,179,8,0.2)]">
-            <Zap size={16} className="mr-2" fill="currentColor" />
-            Le réveil commence ici.
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-6">
-            Arrêtez de gaspiller votre <span className={`${THEME.textPrimary} relative inline-block`}>énergie vitale
-              <svg className="absolute w-full h-3 -bottom-1 left-0 text-yellow-500/30" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="4" fill="transparent"/></svg>
-            </span> et détruisez vos blocages.
-          </h1>
-          <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-lg leading-relaxed">
-            Distractions des écrans, scroll infini sur les réseaux sociaux, procrastination... Chaque jour, vous dissipez l'attention indispensable pour accomplir vos rêves et vos études. Il est temps d'adopter une autodiscipline saine et forte.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <button 
-              onClick={handleScrollToPricing}
-              className={`${THEME.primary} ${THEME.primaryHover} text-slate-900 text-lg font-black py-4 px-8 rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-2`}
-            >
-              <span>Je veux reprendre le contrôle</span>
-              <ChevronRight size={24} />
-            </button>
-          </div>
-          <div className="mt-6 flex items-center space-x-4 text-sm text-slate-400">
-            <div className="flex -space-x-2">
-              <img className="w-8 h-8 rounded-full border-2 border-slate-900" src="https://i.pravatar.cc/100?img=33" alt="Utilisateur" />
-              <img className="w-8 h-8 rounded-full border-2 border-slate-900" src="https://i.pravatar.cc/100?img=12" alt="Utilisateur" />
-              <img className="w-8 h-8 rounded-full border-2 border-slate-900" src="https://i.pravatar.cc/100?img=47" alt="Utilisateur" />
-            </div>
-            <p>Plus de <span className="text-white font-bold">500 jeunes</span> ont choisi la maîtrise</p>
-          </div>
-        </div>
-
-        <div className="relative flex justify-center items-center">
-          <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl border border-slate-700 transform rotate-1 hover:rotate-0 transition-transform duration-500">
-            <img 
-              src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=800" 
-              alt="Détermination et force mentale" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
-            <div className="absolute bottom-6 left-6 right-6">
-              <div className="bg-slate-900/90 backdrop-blur border border-slate-700 p-5 rounded-xl">
-                <p className="text-yellow-500 font-black text-xs mb-1 uppercase tracking-widest">L'Arsenal du Bâtisseur</p>
-                <p className="text-white font-semibold text-sm">Canaliser son attention en productivité et réussite scolaire.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PainPointsSection() {
-  return (
-    <section className={`${THEME.darker} w-full py-20 px-4 border-t border-slate-800`}>
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
-            Voici où s'échappe <span className="text-red-500">votre potentiel</span> tous les jours :
-          </h2>
-          <p className="text-slate-400 max-w-2xl mx-auto">
-            Chaque fois que vous cédez à la distraction instantanée des algorithmes, vous perdez du temps précieux pour votre avenir.
-          </p>
-        </div>
-        
-        <div className="grid md:grid-cols-3 gap-8">
-          <PainCard 
-            icon={<Brain size={48} className="text-red-400" />}
-            title="Le Temps Perdu"
-            desc="Les jeux mobiles, les vidéos courtes et les notifications constantes siphonnent votre attention. Vous manquez de temps pour vos passions réelles, votre sport et vos études."
-          />
-          <PainCard 
-            icon={<Zap size={48} className="text-red-400" />}
-            title="La Procrastination"
-            desc="Vous remettez toujours vos devoirs et projets importants au lendemain. Le stress s'accumule inutilement et vous perdez confiance en vos capacités."
-          />
-          <PainCard 
-            icon={<Target size={48} className="text-red-400" />}
-            title="Le Manque de Focus"
-            desc="Habitué à recevoir des récompenses immédiates sur les écrans, votre cerveau peine à faire des efforts constants et durables pour le long terme."
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ValuePropositionSection() {
-  return (
-    <section className="w-full py-20 px-4 bg-slate-900/50">
-      <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-8">
-          La clé d'un avenir brillant et autonome :
-        </h2>
-        <div className="bg-slate-950 border border-slate-800 rounded-2xl p-8 md:p-10 shadow-xl text-left">
-          <p className="text-lg text-slate-300 leading-relaxed mb-6">
-            <span className="text-yellow-500 font-bold">Votre attention est votre plus grande richesse.</span> Vous possédez en vous une force d'apprentissage, d'énergie physique et de création immense.
-          </p>
-          <p className="text-lg text-slate-300 leading-relaxed mb-6">
-            Le piège de notre époque est de la disperser dans des divertissements éphémères et passifs qui ne vous apportent rien d'autre que de la fatigue mentale et du regret.
-          </p>
-          <div className="border-l-4 border-yellow-500 pl-6 my-8">
-            <p className="text-xl font-bold text-white italic">
-              "Ceux qui préparent leur avenir dès aujourd'hui apprennent à équilibrer leur vie : du sport régulier pour le corps, de la lecture enrichissante pour l'esprit, et une planification claire pour atteindre de grands buts."
-            </p>
-          </div>
-          <p className="text-lg text-slate-300 leading-relaxed">
-            Ce pack vous propose un **plan d'action sain et structuré** pour prendre de bonnes habitudes, organiser vos journées de manière équilibrée (sommeil, sport, études) et libérer votre plein potentiel sur 30 jours.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProductsSection() {
-  return (
-    <section className="w-full py-24 px-4 max-w-6xl mx-auto relative">
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">Votre Guide de Progrès : <span className={THEME.textPrimary}>Le Pack Complet</span></h2>
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-          Trois outils complémentaires pour installer une discipline saine et valorisante.
-        </p>
-      </div>
-      
-      <div className="grid md:grid-cols-3 gap-8">
-        <ProductCard 
-          image="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600"
-          icon={<BookOpen size={32} className={THEME.textPrimary} />}
-          title="Le Produit Maître"
-          subtitle="Ebook Fondateur"
-          name="« Le Réveil du Bâtisseur : De la Pulsion à la Puissance »"
-          desc="Découvrez comment fonctionne votre concentration, comment vous détacher de la dépendance aux écrans et comment transformer vos impulsions quotidiennes en réussite concrète."
-        />
-        <ProductCard 
-          image="https://images.unsplash.com/photo-1495567720989-cebdbdd97913?auto=format&fit=crop&q=80&w=600"
-          icon={<Sun size={32} className={THEME.textPrimary} />}
-          title="Bonus Exclusif 1"
-          subtitle="Ebook Routine"
-          name="« La Routine Matinale du Bâtisseur »"
-          desc="Le matin décide de votre journée. Apprenez à préparer vos matinées pour être en pleine forme (sport, hydratation, planification saine des devoirs)."
-        />
-        <ProductCard 
-          image="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80&w=600"
-          icon={<Calendar size={32} className={THEME.textPrimary} />}
-          title="Bonus Exclusif 2"
-          subtitle="Outil de Suivi"
-          name="Le « Tracker des 30 Jours »"
-          desc="Une grille visuelle simple et stimulante à remplir chaque jour pour mesurer vos progrès dans vos lectures, votre sport et votre travail."
-        />
-      </div>
-    </section>
-  );
-}
-
-function PricingSection() {
-  return (
-    <section id="pricing-section" className={`${THEME.darker} w-full py-24 px-4 text-center border-t border-b border-slate-800 relative overflow-hidden`}>
-      <div className="absolute top-0 right-0 -mr-40 -mt-40 w-96 h-96 bg-yellow-500/10 rounded-full blur-[100px]"></div>
-
-      <div className="max-w-4xl mx-auto relative z-10">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">Investissez dans votre <span className={THEME.textPrimary}>réussite</span></h2>
-        <p className="text-xl text-slate-400 mb-12">Prenez dès aujourd'hui les clés d'une vie plus équilibrée et productive.</p>
-        
-        <div className="bg-slate-900 border-2 border-yellow-500 rounded-3xl p-8 md:p-12 shadow-[0_0_50px_rgba(234,179,8,0.15)] transform transition-transform hover:scale-[1.02] duration-300 max-w-2xl mx-auto relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-yellow-500 text-slate-900 text-xs font-bold px-4 py-2 rounded-bl-xl uppercase tracking-wider">
-            Soutien et Progrès
-          </div>
-
-          <div className="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-4">L'Arsenal complet du Bâtisseur</div>
-          
-          <div className="flex justify-center items-end mb-6 space-x-2">
-            <span className="text-7xl font-black text-white leading-none">4 999</span>
-            <span className="text-2xl font-bold text-slate-400 pb-2">FCFA</span>
-          </div>
-          
-          <div className="bg-slate-800/50 rounded-xl p-4 mb-8 text-left border border-slate-700/50">
-            <ul className="space-y-3">
-              <li className="flex items-center text-slate-300"><CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={20} /> Ebook Fondateur "Le Réveil du Bâtisseur"</li>
-              <li className="flex items-center text-slate-300"><CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={20} /> Guide "La Routine Matinale de Victoire"</li>
-              <li className="flex items-center text-slate-300"><CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={20} /> Le Tracker de Progrès en PDF</li>
-              <li className="flex items-center text-slate-300"><CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={20} /> Accès instantané dans votre boîte mail</li>
-            </ul>
-          </div>
-          
-          <a 
-            href={PAYMENT_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`w-full ${THEME.primary} ${THEME.primaryHover} text-slate-900 text-xl md:text-2xl font-black py-5 px-8 rounded-xl shadow-[0_10px_20px_rgba(234,179,8,0.3)] transition-all flex justify-center items-center space-x-3 transform hover:scale-105`}
-          >
-            <Zap size={28} fill="currentColor" />
-            <span>Obtenir le pack</span>
-          </a>
-          
-          <p className="text-xs text-slate-500 mt-6 italic">
-            * Validation sécurisée. Paiement mobile money et cartes acceptés. Le prix s'adapte automatiquement à votre devise selon votre localisation.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ReviewsSection() {
-  return (
-    <section className="w-full py-24 px-4 bg-slate-900 relative">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center text-white mb-16">
-          Ils ont fait le choix de <span className={THEME.textPrimary}>l'organisation et de la discipline</span>
-        </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative">
-            <Quote className="absolute top-6 right-6 text-slate-700/50" size={60} />
-            <div className="flex text-yellow-500 mb-6 relative z-10">
-              <Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" />
-            </div>
-            <p className="text-slate-300 italic mb-8 flex-grow relative z-10">
-              "Comprendre comment fonctionne mon attention et apprendre à poser mon téléphone a tout changé pour mes études. Je suis bien plus tranquille, organisé et performant."
-            </p>
-            <div className="flex items-center space-x-4">
-              <img src="https://i.pravatar.cc/150?u=marc" alt="Marc D." className="w-12 h-12 rounded-full border-2 border-slate-600" />
-              <div>
-                <div className="font-bold text-white text-lg">Marc D.</div>
-                <div className="text-slate-500 text-sm">A repris le sport & l'écriture</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative">
-            <Quote className="absolute top-6 right-6 text-slate-700/50" size={60} />
-            <div className="flex text-yellow-500 mb-6 relative z-10">
-              <Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" />
-            </div>
-            <p className="text-slate-300 italic mb-8 flex-grow relative z-10">
-              "Le tracker de 30 jours m'aide à faire mes devoirs et à lire tous les soirs de manière régulière sans remettre à plus tard. Un superbe investissement pour mon année scolaire."
-            </p>
-            <div className="flex items-center space-x-4">
-              <img src="https://i.pravatar.cc/150?u=cedric" alt="Cédric T." className="w-12 h-12 rounded-full border-2 border-slate-600" />
-              <div>
-                <div className="font-bold text-white text-lg">Cédric T.</div>
-                <div className="text-slate-500 text-sm">Lycéen & Passionné de code</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative md:col-span-2 lg:col-span-1">
-            <Quote className="absolute top-6 right-6 text-slate-700/50" size={60} />
-            <div className="flex text-yellow-500 mb-6 relative z-10">
-              <Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" />
-            </div>
-            <p className="text-slate-300 italic mb-8 flex-grow relative z-10">
-              "Je passais trop de temps devant les jeux vidéo sur mobile et j'étais souvent fatigué. Ce livre m'a aidé à instaurer des rituels matinaux et de lecture qui me font grandir sainement."
-            </p>
-            <div className="flex items-center space-x-4">
-              <img src="https://i.pravatar.cc/150?u=sophie" alt="Arnaud K." className="w-12 h-12 rounded-full border-2 border-slate-600" />
-              <div>
-                <div className="font-bold text-white text-lg">Arnaud K.</div>
-                <div className="text-slate-500 text-sm">Étudiant</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ContactSection() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState('idle');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus('loading');
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Académie des Bâtisseurs</title>
     
-    try {
-      const response = await fetch("https://formspree.io/f/xeeykwob", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(formData)
-      });
-      if (response.ok) {
-        setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
-      } else {
-        setStatus('error');
-      }
-    } catch (error) {
-      setStatus('error');
-    } finally {
-      setTimeout(() => setStatus('idle'), 5000);
-    }
-  };
-
-  return (
-    <section className="w-full py-20 px-4 bg-slate-950">
-      <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-16">
-        <div className="flex-1">
-          <div className="mb-8">
-            <MessageCircle className="text-yellow-500 mb-4" size={48} />
-            <h2 className="text-3xl font-extrabold text-white mb-3">Une question avant d'agir ?</h2>
-            <p className="text-slate-400 text-lg">Notre équipe est à votre écoute. Écrivez-nous en toute discrétion et simplicité.</p>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-5 bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <input type="text" name="name" placeholder="Votre Prénom" required className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 transition-colors" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-              <input type="email" name="email" placeholder="Votre Email" required className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 transition-colors" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
-            </div>
-            <textarea name="message" placeholder="Votre question ou préoccupation..." required rows={5} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 resize-none transition-colors" value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} />
-            <button type="submit" disabled={status === 'loading'} className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-6 rounded-xl transition-colors flex justify-center items-center space-x-2">
-              {status === 'loading' ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} />}
-              <span>{status === 'loading' ? 'Transmission en cours...' : 'Envoyer le message'}</span>
-            </button>
-            {status === 'success' && <div className="bg-green-900/50 border border-green-500/50 text-green-300 p-4 rounded-xl text-center mt-4 font-medium flex items-center justify-center"><CheckCircle2 className="mr-2" size={20}/> Message envoyé avec succès !</div>}
-            {status === 'error' && <div className="bg-red-900/50 border border-red-500/50 text-red-300 p-4 rounded-xl text-center mt-4 font-medium">Une erreur est survenue. Veuillez réessayer.</div>}
-          </form>
-        </div>
-
-        <div className="lg:w-1/3 flex flex-col justify-center">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-3xl border border-slate-700 text-center shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-2xl"></div>
-            <div className="bg-green-500/20 p-5 rounded-full inline-block mb-6 relative z-10 border border-green-500/30">
-              <Phone size={40} className="text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-4 relative z-10">Discrétion & Aide</h3>
-            <p className="text-slate-300 mb-8 relative z-10 leading-relaxed">
-              Une hésitation ? Échangez directement avec un membre de notre équipe sur WhatsApp en toute discrétion.
-            </p>
-            <a 
-              href={`https://wa.me/${PHONE_NUMBER.replace('+', '')}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-4 px-6 rounded-xl transition-all hover:-translate-y-1 flex justify-center items-center space-x-3 w-full relative z-10 shadow-lg shadow-green-900/50"
-            >
-              <Phone size={24} />
-              <span>Discuter sur WhatsApp</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ==========================================
-// COMPOSANTS UI MINEURS
-// ==========================================
-
-function PainCard({ icon, title, desc }) {
-  return (
-    <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center flex flex-col items-center hover:border-slate-600 transition-colors duration-300 shadow-lg">
-      <div className="bg-red-500/10 p-5 rounded-full mb-6 border border-red-500/20 shadow-[0_0_20px_rgba(248,113,113,0.1)]">
-        {icon}
-      </div>
-      <h3 className="text-2xl font-bold text-white mb-4">{title}</h3>
-      <p className="text-slate-400 leading-relaxed">{desc}</p>
-    </div>
-  );
-}
-
-function ProductCard({ image, icon, title, subtitle, name, desc }) {
-  return (
-    <div className="bg-slate-800 rounded-3xl border border-slate-700 flex flex-col overflow-hidden hover:-translate-y-2 transition-transform duration-300 shadow-xl group">
-      <div className="h-48 w-full overflow-hidden relative">
-        <img src={image} alt={subtitle} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-800 to-transparent"></div>
-        <div className="absolute bottom-4 left-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700">
-          {icon}
-        </div>
-      </div>
-      <div className="p-8 flex flex-col flex-grow">
-        <div className="text-yellow-500 font-bold text-sm mb-2 uppercase tracking-widest">{title}</div>
-        <div className="text-white font-extrabold text-2xl mb-2">{subtitle}</div>
-        <p className="text-slate-300 font-bold mb-4">{name}</p>
-        <p className="text-slate-400 text-sm leading-relaxed mt-auto">{desc}</p>
-      </div>
-    </div>
-  );
-}
-
-// ==========================================
-// CHATBOT IA GEMINI (VERSION AMÉLIORÉE)
-// ==========================================
-function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Salut Bâtisseur ! Je suis l'IA de l'Académie. Comment puis-je t'aider à vaincre la procrastination, gérer ton attention et reprogrammer ton énergie aujourd'hui ?", sender: 'ai' }
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
-
-  const quickQuestions = [
-    { text: "🎯 Comment vaincre la distraction ?", query: "Comment puis-je vaincre la distraction et rester concentré ?" },
-    { text: "📦 Que contient exactement le pack ?", query: "Qu'est-ce qui est inclus dans le pack complet ?" },
-    { text: "⚡ Comment ça marche après l'achat ?", query: "Comment est-ce que je reçois le pack après avoir payé ?" },
-  ];
-
-  useEffect(() => { 
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
-    }
-  }, [messages, isTyping, isOpen]);
-
-  const handleSendMessage = async (textToSend) => {
-    if (!textToSend.trim()) return;
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    setMessages(prev => [...prev, { id: Date.now(), text: textToSend, sender: 'user' }]);
-    setIsTyping(true);
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-    try {
-      const aiResponse = await fetchGeminiResponse(textToSend, messages.slice(-4));
-      setMessages(prev => [...prev, { id: Date.now(), text: aiResponse, sender: 'ai' }]);
-    } catch (error) {
-      setMessages(prev => [
-        ...prev, 
-        { 
-          id: Date.now(), 
-          text: "Désolé Bâtisseur, une micro-coupure réseau est survenue. N'hésite pas à réitérer ta question dans quelques instants !", 
-          sender: 'ai' 
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
         }
-      ]);
-    } finally {
-      setIsTyping(false);
-    }
-  };
+        /* Masquer la scrollbar pour le chat tout en gardant le défilement */
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-messages::-webkit-scrollbar-thumb {
+            background-color: #334155; 
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 font-sans min-h-screen">
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    if (!input.trim() || isTyping) return;
-    handleSendMessage(input);
-    setInput('');
-  };
-
-  const handleQuickQuestionClick = (queryText) => {
-    if (isTyping) return;
-    handleSendMessage(queryText);
-  };
-
-  return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {!isOpen && (
-        <button 
-          onClick={() => setIsOpen(true)} 
-          className={`${THEME.primary} ${THEME.primaryHover} text-slate-900 p-4 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] transform transition-all hover:scale-110 flex items-center justify-center animate-bounce`}
-        >
-          <MessageCircle size={32} />
-        </button>
-      )}
-
-      {isOpen && (
-        <div className="bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-[350px] sm:w-[400px] flex flex-col h-[550px] max-h-[85vh] overflow-hidden">
-          <div className={`${THEME.primary} text-slate-900 p-4 flex justify-between items-center`}>
-            <div className="flex items-center space-x-3">
-              <div className="bg-slate-900 text-yellow-500 p-2 rounded-full">
-                <Brain size={20} />
-              </div>
-              <div>
-                <span className="font-extrabold text-lg block leading-tight">IA Bâtisseur</span>
-                <span className="text-[11px] font-medium opacity-80 flex items-center">
-                  <Sparkles size={10} className="mr-1 animate-pulse" /> En ligne • Conseils instantanés
-                </span>
-              </div>
+    <!-- NAVIGATION -->
+    <nav class="bg-slate-950 p-4 sticky top-0 z-40 border-b border-slate-800 shadow-md backdrop-blur-md bg-opacity-90">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="shield-alert" class="text-yellow-500 w-8 h-8"></i>
+                <span class="text-xl md:text-2xl font-bold tracking-wider text-white">L'Académie des Bâtisseurs</span>
             </div>
-            <button onClick={() => setIsOpen(false)} className="hover:bg-yellow-600/50 p-2 rounded-full transition-colors"><X size={24} /></button>
-          </div>
-
-          <div className="flex-1 p-5 overflow-y-auto space-y-5 bg-slate-950/50">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[85%] p-4 rounded-2xl text-[15px] leading-relaxed shadow-md ${msg.sender === 'user' ? 'bg-yellow-500 text-slate-900 font-medium rounded-br-sm' : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-sm'}`}>
-                  {msg.text}
-                </div>
-              </div>
-            ))}
-            
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="bg-slate-800 text-slate-400 p-4 rounded-2xl rounded-bl-sm flex space-x-2 border border-slate-700">
-                  <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce"></div>
-                  <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className="p-3 bg-slate-900/80 border-t border-slate-800 flex flex-col space-y-1.5">
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider px-1">Questions fréquentes :</span>
-            <div className="flex flex-wrap gap-1.5">
-              {quickQuestions.map((q, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleQuickQuestionClick(q.query)}
-                  disabled={isTyping}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate disabled:opacity-50"
-                >
-                  {q.text}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <form onSubmit={handleFormSubmit} className="p-4 bg-slate-900 border-t border-slate-800 flex space-x-3">
-            <input 
-              type="text" 
-              value={input} 
-              onChange={(e) => setInput(e.target.value)} 
-              placeholder="Écris ton message ici..." 
-              className="flex-1 bg-slate-950 text-white border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-yellow-500 text-sm transition-colors" 
-            />
-            <button 
-              type="submit" 
-              disabled={!input.trim() || isTyping} 
-              className={`${THEME.primary} text-slate-900 p-3 rounded-xl disabled:opacity-50 transition-colors hover:bg-yellow-400`}
-            >
-              <Send size={20} />
+            <button onclick="document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })" class="hidden md:flex bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors border border-slate-700">
+                Obtenir le pack
             </button>
-          </form>
         </div>
-      )}
+    </nav>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="relative w-full pt-16 pb-24 px-4 overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-yellow-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+            
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
+                <div class="text-left flex flex-col items-start">
+                    <div class="inline-block px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-sm font-bold mb-6 animate-pulse flex items-center shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                        <i data-lucide="zap" class="w-4 h-4 mr-2 fill-current"></i>
+                        Le réveil commence ici.
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-6">
+                        Arrêtez de gaspiller votre <span class="text-yellow-500 relative inline-block">énergie vitale
+                            <svg class="absolute w-full h-3 -bottom-1 left-0 text-yellow-500/30" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="4" fill="transparent"/></svg>
+                        </span> et détruisez vos blocages.
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-lg leading-relaxed">
+                        Distractions des écrans, scroll infini sur les réseaux sociaux, procrastination... Chaque jour, vous dissipez l'attention indispensable pour accomplir vos rêves et vos études. Il est temps d'adopter une autodiscipline saine et forte.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                        <button onclick="document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 text-lg font-black py-4 px-8 rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-2 w-full">
+                            <span>Je veux reprendre le contrôle</span>
+                            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    <div class="mt-6 flex items-center space-x-4 text-sm text-slate-400">
+                        <div class="flex -space-x-2">
+                            <img class="w-8 h-8 rounded-full border-2 border-slate-900 object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80" alt="Utilisateur" />
+                            <img class="w-8 h-8 rounded-full border-2 border-slate-900 object-cover" src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80" alt="Utilisateur" />
+                            <img class="w-8 h-8 rounded-full border-2 border-slate-900 object-cover" src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=100&q=80" alt="Utilisateur" />
+                        </div>
+                        <p>Plus de <span class="text-white font-bold">500 jeunes</span> ont choisi la maîtrise</p>
+                    </div>
+                </div>
+        
+                <div class="relative flex justify-center items-center">
+                    <div class="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl border border-slate-700 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                        <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=800" alt="Détermination et force mentale" class="w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6">
+                            <div class="bg-slate-900/90 backdrop-blur border border-slate-700 p-5 rounded-xl">
+                                <p class="text-yellow-500 font-black text-xs mb-1 uppercase tracking-widest">L'Arsenal du Bâtisseur</p>
+                                <p class="text-white font-semibold text-sm">Canaliser son attention en productivité et réussite scolaire.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAIN POINTS SECTION -->
+        <section class="bg-slate-950 w-full py-20 px-4 border-t border-slate-800">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">
+                        Voici où s'échappe <span class="text-red-500">votre potentiel</span> tous les jours :
+                    </h2>
+                    <p class="text-slate-400 max-w-2xl mx-auto">
+                        Chaque fois que vous cédez à la distraction instantanée des algorithmes, vous perdez du temps précieux pour votre avenir.
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Pain Card 1 -->
+                    <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center flex flex-col items-center hover:border-slate-600 transition-colors duration-300 shadow-lg">
+                        <div class="bg-red-500/10 p-5 rounded-full mb-6 border border-red-500/20 shadow-[0_0_20px_rgba(248,113,113,0.1)]">
+                            <i data-lucide="brain" class="text-red-400 w-12 h-12"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Le Temps Perdu</h3>
+                        <p class="text-slate-400 leading-relaxed">Les jeux mobiles, les vidéos courtes et les notifications constantes siphonnent votre attention. Vous manquez de temps pour vos passions réelles et vos études.</p>
+                    </div>
+                    <!-- Pain Card 2 -->
+                    <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center flex flex-col items-center hover:border-slate-600 transition-colors duration-300 shadow-lg">
+                        <div class="bg-red-500/10 p-5 rounded-full mb-6 border border-red-500/20 shadow-[0_0_20px_rgba(248,113,113,0.1)]">
+                            <i data-lucide="zap" class="text-red-400 w-12 h-12"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">La Procrastination</h3>
+                        <p class="text-slate-400 leading-relaxed">Vous remettez toujours vos devoirs et projets importants au lendemain. Le stress s'accumule inutilement et vous perdez confiance en vos capacités.</p>
+                    </div>
+                    <!-- Pain Card 3 -->
+                    <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center flex flex-col items-center hover:border-slate-600 transition-colors duration-300 shadow-lg">
+                        <div class="bg-red-500/10 p-5 rounded-full mb-6 border border-red-500/20 shadow-[0_0_20px_rgba(248,113,113,0.1)]">
+                            <i data-lucide="target" class="text-red-400 w-12 h-12"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Le Manque de Focus</h3>
+                        <p class="text-slate-400 leading-relaxed">Habitué à recevoir des récompenses immédiates sur les écrans, votre cerveau peine à faire des efforts constants et durables pour le long terme.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VALUE PROPOSITION -->
+        <section class="w-full py-20 px-4 bg-slate-900/50">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-8">La clé d'un avenir brillant et autonome :</h2>
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-8 md:p-10 shadow-xl text-left">
+                    <p class="text-lg text-slate-300 leading-relaxed mb-6">
+                        <span class="text-yellow-500 font-bold">Votre attention est votre plus grande richesse.</span> Vous possédez en vous une force d'apprentissage, d'énergie physique et de création immense.
+                    </p>
+                    <p class="text-lg text-slate-300 leading-relaxed mb-6">
+                        Le piège de notre époque est de la disperser dans des divertissements éphémères et passifs qui ne vous apportent rien d'autre que de la fatigue mentale et du regret.
+                    </p>
+                    <div class="border-l-4 border-yellow-500 pl-6 my-8">
+                        <p class="text-xl font-bold text-white italic">
+                            "Ceux qui préparent leur avenir dès aujourd'hui apprennent à équilibrer leur vie : du sport régulier pour le corps, de la lecture enrichissante pour l'esprit, et une planification claire pour atteindre de grands buts."
+                        </p>
+                    </div>
+                    <p class="text-lg text-slate-300 leading-relaxed">
+                        Ce pack vous propose un <strong>plan d'action sain et structuré</strong> pour prendre de bonnes habitudes, organiser vos journées de manière équilibrée (sommeil, sport, études) et libérer votre plein potentiel sur 30 jours.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCTS SECTION -->
+        <section class="w-full py-24 px-4 max-w-6xl mx-auto relative">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">Votre Guide de Progrès : <span class="text-yellow-500">Le Pack Complet</span></h2>
+                <p class="text-xl text-slate-400 max-w-2xl mx-auto">
+                    Trois outils complémentaires pour installer une discipline saine et valorisante.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Product 1 -->
+                <div class="bg-slate-800 rounded-3xl border border-slate-700 flex flex-col overflow-hidden hover:-translate-y-2 transition-transform duration-300 shadow-xl group">
+                    <div class="h-48 w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600" alt="Ebook Principal" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-800 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700">
+                            <i data-lucide="book-open" class="text-yellow-500 w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="p-8 flex flex-col flex-grow">
+                        <div class="text-yellow-500 font-bold text-sm mb-2 uppercase tracking-widest">Le Produit Maître</div>
+                        <div class="text-white font-extrabold text-2xl mb-2">Ebook Fondateur</div>
+                        <p class="text-slate-300 font-bold mb-4">« Le Réveil du Bâtisseur »</p>
+                        <p class="text-slate-400 text-sm leading-relaxed mt-auto">Découvrez comment fonctionne votre concentration, comment vous détacher de la dépendance aux écrans et comment transformer vos impulsions en réussite concrète.</p>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="bg-slate-800 rounded-3xl border border-slate-700 flex flex-col overflow-hidden hover:-translate-y-2 transition-transform duration-300 shadow-xl group">
+                    <div class="h-48 w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1495567720989-cebdbdd97913?auto=format&fit=crop&q=80&w=600" alt="Ebook Routine" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-800 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700">
+                            <i data-lucide="sun" class="text-yellow-500 w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="p-8 flex flex-col flex-grow">
+                        <div class="text-yellow-500 font-bold text-sm mb-2 uppercase tracking-widest">Bonus Exclusif 1</div>
+                        <div class="text-white font-extrabold text-2xl mb-2">Ebook Routine</div>
+                        <p class="text-slate-300 font-bold mb-4">« La Routine Matinale »</p>
+                        <p class="text-slate-400 text-sm leading-relaxed mt-auto">Le matin décide de votre journée. Apprenez à préparer vos matinées pour être en pleine forme (sport, hydratation, planification saine des devoirs).</p>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="bg-slate-800 rounded-3xl border border-slate-700 flex flex-col overflow-hidden hover:-translate-y-2 transition-transform duration-300 shadow-xl group">
+                    <div class="h-48 w-full overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80&w=600" alt="Tracker" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-800 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700">
+                            <i data-lucide="calendar" class="text-yellow-500 w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="p-8 flex flex-col flex-grow">
+                        <div class="text-yellow-500 font-bold text-sm mb-2 uppercase tracking-widest">Bonus Exclusif 2</div>
+                        <div class="text-white font-extrabold text-2xl mb-2">Outil de Suivi</div>
+                        <p class="text-slate-300 font-bold mb-4">Le « Tracker des 30 Jours »</p>
+                        <p class="text-slate-400 text-sm leading-relaxed mt-auto">Une grille visuelle simple et stimulante à remplir chaque jour pour mesurer vos progrès dans vos lectures, votre sport et votre travail.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRICING SECTION -->
+        <section id="pricing-section" class="bg-slate-950 w-full py-24 px-4 text-center border-t border-b border-slate-800 relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mr-40 -mt-40 w-96 h-96 bg-yellow-500/10 rounded-full blur-[100px]"></div>
+
+            <div class="max-w-4xl mx-auto relative z-10">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">Investissez dans votre <span class="text-yellow-500">réussite</span></h2>
+                <p class="text-xl text-slate-400 mb-12">Prenez dès aujourd'hui les clés d'une vie plus équilibrée et productive.</p>
+                
+                <div class="bg-slate-900 border-2 border-yellow-500 rounded-3xl p-8 md:p-12 shadow-[0_0_50px_rgba(234,179,8,0.15)] transform transition-transform hover:scale-[1.02] duration-300 max-w-2xl mx-auto relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-yellow-500 text-slate-900 text-xs font-bold px-4 py-2 rounded-bl-xl uppercase tracking-wider">
+                        Soutien et Progrès
+                    </div>
+
+                    <div class="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-4">L'Arsenal complet du Bâtisseur</div>
+                    
+                    <div class="flex justify-center items-end mb-6 space-x-2">
+                        <span class="text-7xl font-black text-white leading-none">4 999</span>
+                        <span class="text-2xl font-bold text-slate-400 pb-2">FCFA</span>
+                    </div>
+                    
+                    <div class="bg-slate-800/50 rounded-xl p-4 mb-8 text-left border border-slate-700/50">
+                        <ul class="space-y-3">
+                            <li class="flex items-center text-slate-300"><i data-lucide="check-circle" class="text-yellow-500 mr-3 shrink-0 w-5 h-5"></i> Ebook Fondateur "Le Réveil du Bâtisseur"</li>
+                            <li class="flex items-center text-slate-300"><i data-lucide="check-circle" class="text-yellow-500 mr-3 shrink-0 w-5 h-5"></i> Guide "La Routine Matinale de Victoire"</li>
+                            <li class="flex items-center text-slate-300"><i data-lucide="check-circle" class="text-yellow-500 mr-3 shrink-0 w-5 h-5"></i> Le Tracker de Progrès en PDF</li>
+                            <li class="flex items-center text-slate-300"><i data-lucide="check-circle" class="text-yellow-500 mr-3 shrink-0 w-5 h-5"></i> Accès instantané dans votre boîte mail</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="https://axizmkxg.mychariow.shop/prd_9cc2zy2j" target="_blank" rel="noopener noreferrer" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 text-xl md:text-2xl font-black py-5 px-8 rounded-xl shadow-[0_10px_20px_rgba(234,179,8,0.3)] transition-all flex justify-center items-center space-x-3 transform hover:scale-105">
+                        <i data-lucide="zap" class="w-7 h-7 fill-current"></i>
+                        <span>Obtenir le pack</span>
+                    </a>
+                    
+                    <p class="text-xs text-slate-500 mt-6 italic">
+                        * Validation sécurisée. Paiement mobile money et cartes acceptés. Le prix s'adapte automatiquement à votre devise selon votre localisation.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- REVIEWS SECTION -->
+        <section class="w-full py-24 px-4 bg-slate-900 relative">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-center text-white mb-16">
+                    Ils ont fait le choix de <span class="text-yellow-500">l'organisation et de la discipline</span>
+                </h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Review 1 -->
+                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative">
+                        <i data-lucide="quote" class="absolute top-6 right-6 text-slate-700/50 w-12 h-12"></i>
+                        <div class="flex text-yellow-500 mb-6 relative z-10">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-300 italic mb-8 flex-grow relative z-10">
+                            "Comprendre comment fonctionne mon attention et apprendre à poser mon téléphone a tout changé pour mes études. Je suis bien plus tranquille, organisé et performant."
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=150&q=80" alt="Marc D." class="w-12 h-12 rounded-full border-2 border-slate-600 object-cover" />
+                            <div>
+                                <div class="font-bold text-white text-lg">Marc D.</div>
+                                <div class="text-slate-500 text-sm">A repris le sport & l'écriture</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 2 -->
+                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative">
+                        <i data-lucide="quote" class="absolute top-6 right-6 text-slate-700/50 w-12 h-12"></i>
+                        <div class="flex text-yellow-500 mb-6 relative z-10">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-300 italic mb-8 flex-grow relative z-10">
+                            "Le tracker de 30 jours m'aide à faire mes devoirs et à lire tous les soirs de manière régulière sans remettre à plus tard. Un superbe investissement pour mon année scolaire."
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80" alt="Cédric T." class="w-12 h-12 rounded-full border-2 border-slate-600 object-cover" />
+                            <div>
+                                <div class="font-bold text-white text-lg">Cédric T.</div>
+                                <div class="text-slate-500 text-sm">Lycéen & Passionné de code</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative md:col-span-2 lg:col-span-1">
+                        <i data-lucide="quote" class="absolute top-6 right-6 text-slate-700/50 w-12 h-12"></i>
+                        <div class="flex text-yellow-500 mb-6 relative z-10">
+                            <i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i><i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                        </div>
+                        <p class="text-slate-300 italic mb-8 flex-grow relative z-10">
+                            "Je passais trop de temps devant les jeux vidéo sur mobile et j'étais souvent fatigué. Ce livre m'a aidé à instaurer des rituels matinaux et de lecture qui me font grandir sainement."
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=150&q=80" alt="Arnaud K." class="w-12 h-12 rounded-full border-2 border-slate-600 object-cover" />
+                            <div>
+                                <div class="font-bold text-white text-lg">Arnaud K.</div>
+                                <div class="text-slate-500 text-sm">Étudiant</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section class="w-full py-20 px-4 bg-slate-950">
+            <div class="max-w-5xl mx-auto flex flex-col lg:flex-row gap-16">
+                <!-- Formulaire -->
+                <div class="flex-1">
+                    <div class="mb-8">
+                        <i data-lucide="message-circle" class="text-yellow-500 mb-4 w-12 h-12"></i>
+                        <h2 class="text-3xl font-extrabold text-white mb-3">Une question avant d'agir ?</h2>
+                        <p class="text-slate-400 text-lg">Notre équipe est à votre écoute. Écrivez-nous en toute discrétion et simplicité.</p>
+                    </div>
+                    
+                    <form id="contact-form" class="space-y-5 bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-xl">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <input type="text" name="name" id="name" placeholder="Votre Prénom" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 transition-colors" />
+                            <input type="email" name="email" id="email" placeholder="Votre Email" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 transition-colors" />
+                        </div>
+                        <textarea name="message" id="message" placeholder="Votre question ou préoccupation..." required rows="5" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 resize-none transition-colors"></textarea>
+                        
+                        <button type="submit" id="submit-btn" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-6 rounded-xl transition-colors flex justify-center items-center space-x-2">
+                            <i data-lucide="send" id="btn-icon" class="w-6 h-6"></i>
+                            <span id="btn-text">Envoyer le message</span>
+                        </button>
+                        
+                        <div id="form-success" class="hidden bg-green-900/50 border border-green-500/50 text-green-300 p-4 rounded-xl text-center mt-4 font-medium flex items-center justify-center">
+                            <i data-lucide="check-circle" class="mr-2 w-5 h-5"></i> Message envoyé avec succès !
+                        </div>
+                        <div id="form-error" class="hidden bg-red-900/50 border border-red-500/50 text-red-300 p-4 rounded-xl text-center mt-4 font-medium">
+                            Une erreur est survenue. Veuillez réessayer.
+                        </div>
+                    </form>
+                </div>
+
+                <!-- WhatsApp -->
+                <div class="lg:w-1/3 flex flex-col justify-center">
+                    <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-3xl border border-slate-700 text-center shadow-2xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-2xl"></div>
+                        <div class="bg-green-500/20 p-5 rounded-full inline-block mb-6 relative z-10 border border-green-500/30">
+                            <i data-lucide="phone" class="text-green-500 w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4 relative z-10">Discrétion & Aide</h3>
+                        <p class="text-slate-300 mb-8 relative z-10 leading-relaxed">
+                            Une hésitation ? Échangez directement avec un membre de notre équipe sur WhatsApp en toute discrétion.
+                        </p>
+                        <a href="https://wa.me/242056435520" target="_blank" rel="noopener noreferrer" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-4 px-6 rounded-xl transition-all hover:-translate-y-1 flex justify-center items-center space-x-3 w-full relative z-10 shadow-lg shadow-green-900/50">
+                            <i data-lucide="phone" class="w-6 h-6"></i>
+                            <span>Discuter sur WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 py-12 text-center text-slate-500 text-sm border-t border-slate-800">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col items-center">
+            <i data-lucide="shield-alert" class="text-slate-700 mb-4 w-10 h-10"></i>
+            <p class="mb-2 text-base">&copy; <span id="current-year"></span> L'Académie des Bâtisseurs. Tous droits réservés.</p>
+            <p class="text-xs max-w-md mx-auto">
+                Ce site ne fait pas partie du site web Facebook ou de Facebook Inc. De plus, ce site n'est en aucun cas approuvé par Facebook. FACEBOOK est une marque déposée de FACEBOOK, Inc.
+            </p>
+            <div class="mt-6 flex space-x-4 items-center justify-center">
+                <span class="flex items-center"><i data-lucide="zap" class="mr-1 text-yellow-500 w-3 h-3"></i> Paiement 100% Sécurisé</span>
+                <span class="flex items-center"><i data-lucide="zap" class="mr-1 text-yellow-500 w-3 h-3"></i> Accès Immédiat après paiement</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CHATBOT IA GEMINI -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <!-- Bouton d'ouverture flottant -->
+        <button id="chatbot-toggle-btn" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-4 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] transform transition-all hover:scale-110 flex items-center justify-center animate-bounce">
+            <i data-lucide="message-circle" class="w-8 h-8"></i>
+        </button>
+
+        <!-- Fenêtre de chat -->
+        <div id="chatbot-window" class="hidden bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-[350px] sm:w-[400px] flex flex-col h-[550px] max-h-[85vh] overflow-hidden transition-all duration-300 transform scale-95 opacity-0 origin-bottom-right">
+            <!-- Header -->
+            <div class="bg-yellow-500 text-slate-900 p-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-slate-900 text-yellow-500 p-2 rounded-full">
+                        <i data-lucide="brain" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-lg block leading-tight">IA Bâtisseur</span>
+                        <span class="text-[11px] font-medium opacity-80 flex items-center">
+                            <i data-lucide="sparkles" class="w-3 h-3 mr-1 animate-pulse"></i> En ligne • Conseils instantanés
+                        </span>
+                    </div>
+                </div>
+                <button id="chatbot-close-btn" class="hover:bg-yellow-600/50 p-2 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Messages -->
+            <div id="chat-messages" class="flex-1 p-5 overflow-y-auto space-y-5 bg-slate-950/50 flex flex-col">
+                <!-- Les messages s'insèreront ici en JS -->
+            </div>
+
+            <!-- Indicateur de frappe (caché par défaut) -->
+            <div id="typing-indicator" class="hidden px-5 pb-5">
+                <div class="flex justify-start">
+                    <div class="bg-slate-800 text-slate-400 p-4 rounded-2xl rounded-bl-sm flex space-x-2 border border-slate-700">
+                        <div class="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce"></div>
+                        <div class="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick questions -->
+            <div class="p-3 bg-slate-900/80 border-t border-slate-800 flex flex-col space-y-1.5">
+                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider px-1">Questions fréquentes :</span>
+                <div class="flex flex-wrap gap-1.5">
+                    <button class="quick-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate" data-query="Comment puis-je vaincre la distraction et rester concentré ?">🎯 Comment vaincre la distraction ?</button>
+                    <button class="quick-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate" data-query="Qu'est-ce qui est inclus dans le pack complet ?">📦 Que contient exactement le pack ?</button>
+                    <button class="quick-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate" data-query="Comment est-ce que je reçois le pack après avoir payé ?">⚡ Comment ça marche après l'achat ?</button>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <form id="chat-form" class="p-4 bg-slate-900 border-t border-slate-800 flex space-x-3">
+                <input type="text" id="chat-input" placeholder="Écris ton message ici..." autocomplete="off" class="flex-1 bg-slate-950 text-white border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-yellow-500 text-sm transition-colors" />
+                <button type="submit" id="chat-submit-btn" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-xl transition-colors disabled:opacity-50">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </form>
+        </div>
     </div>
-  );
-}
+
+    <!-- MAIN JAVASCRIPT -->
+    <script>
+        // Initialiser les icônes Lucide
+        lucide.createIcons();
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // =====================================
+        // LOGIQUE DU FORMULAIRE DE CONTACT
+        // =====================================
+        const contactForm = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const formSuccess = document.getElementById('form-success');
+        const formError = document.getElementById('form-error');
+
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // État de chargement
+            submitBtn.disabled = true;
+            btnText.textContent = "Transmission en cours...";
+            btnIcon.setAttribute('data-lucide', 'loader-2');
+            btnIcon.classList.add('animate-spin');
+            lucide.createIcons();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value
+            };
+
+            try {
+                const response = await fetch("https://formspree.io/f/xeeykwob", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    formSuccess.classList.remove('hidden');
+                    formError.classList.add('hidden');
+                    contactForm.reset();
+                } else {
+                    throw new Error("Erreur");
+                }
+            } catch (error) {
+                formError.classList.remove('hidden');
+                formSuccess.classList.add('hidden');
+            } finally {
+                // Rétablir l'état par défaut après 5 secondes
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    btnText.textContent = "Envoyer le message";
+                    btnIcon.setAttribute('data-lucide', 'send');
+                    btnIcon.classList.remove('animate-spin');
+                    formSuccess.classList.add('hidden');
+                    formError.classList.add('hidden');
+                    lucide.createIcons();
+                }, 5000);
+            }
+        });
+
+        // =====================================
+        // LOGIQUE DU CHATBOT GEMINI
+        // =====================================
+        
+        // IMPORTANT : Renseignez ici votre clé API Gemini (AIzaSy...)
+        const apiKey = ""; 
+
+        const systemPrompt = `Tu es l'assistant virtuel officiel de "L'Académie des Bâtisseurs". 
+        Ton rôle est d'accompagner les visiteurs avec bienveillance et de les motiver à surmonter les blocages du quotidien (procrastination, distractions des réseaux sociaux, manque de discipline, perte d'attention) en adoptant des habitudes de vie saines (sport, sommeil de qualité, lecture, planification des études).
+        Tu réponds à leurs questions sur le pack "Le Réveil du Bâtisseur : De la Pulsion à la Puissance" et tu les encourages à l'acquérir pour structurer leur réussite.
+
+        Détails essentiels du pack :
+        - Prix : 4 999 FCFA (s'adapte à la devise locale).
+        - Contenu : 
+          1. Ebook principal "Le Réveil du Bâtisseur" : Guide d'autodiscipline, de concentration et de saines habitudes.
+          2. Bonus 1 "La Routine Matinale du Bâtisseur" : Techniques pour démarrer fort, faire du sport et étudier sereinement chaque matin.
+          3. Bonus 2 "Le Tracker des 30 Jours" : Outil de suivi visuel pour valider ses efforts quotidiens (devoirs, lecture, sport).
+        - Contact WhatsApp de l'équipe : +242 056435520.
+
+        Consignes de communication :
+        - Adopte un ton dynamique, inspirant, digne, respectueux et très axé sur le développement sain du potentiel.
+        - Sois clair, concis et direct.
+        - Reste toujours dans un cadre sain, positif et encourageant (sport, études, concentration, saines habitudes). Redirige toujours poliment vers l'autodiscipline positive si la discussion dévie.`;
+
+        let chatHistory = [
+            { id: 1, text: "Salut Bâtisseur ! Je suis l'IA de l'Académie. Comment puis-je t'aider à vaincre la procrastination, gérer ton attention et reprogrammer ton énergie aujourd'hui ?", sender: 'ai' }
+        ];
+        let isTyping = false;
+
+        const chatToggleBtn = document.getElementById('chatbot-toggle-btn');
+        const chatWindow = document.getElementById('chatbot-window');
+        const chatCloseBtn = document.getElementById('chatbot-close-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatSubmitBtn = document.getElementById('chat-submit-btn');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const quickBtns = document.querySelectorAll('.quick-btn');
+
+        // Toggle Chatbot
+        chatToggleBtn.addEventListener('click', () => {
+            chatWindow.classList.remove('hidden');
+            setTimeout(() => {
+                chatWindow.classList.remove('scale-95', 'opacity-0');
+                chatWindow.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            chatToggleBtn.classList.add('hidden');
+            renderMessages();
+            scrollToBottom();
+        });
+
+        chatCloseBtn.addEventListener('click', () => {
+            chatWindow.classList.remove('scale-100', 'opacity-100');
+            chatWindow.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                chatWindow.classList.add('hidden');
+                chatToggleBtn.classList.remove('hidden');
+            }, 300); // Wait for transition
+        });
+
+        // Scroll vers le bas du chat
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 50);
+        }
+
+        // Afficher les messages
+        function renderMessages() {
+            chatMessages.innerHTML = '';
+            chatHistory.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`;
+                
+                const bubble = document.createElement('div');
+                bubble.className = `max-w-[85%] p-4 rounded-2xl text-[15px] leading-relaxed shadow-md ${
+                    msg.sender === 'user' 
+                    ? 'bg-yellow-500 text-slate-900 font-medium rounded-br-sm' 
+                    : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-sm'
+                }`;
+                bubble.textContent = msg.text;
+                
+                div.appendChild(bubble);
+                chatMessages.appendChild(div);
+            });
+        }
+
+        // Appel à l'API Gemini
+        async function fetchGeminiResponse(userMessage, historyContext) {
+            const maxRetries = 5;
+            let delay = 1000;
+            
+            // Construit l'URL avec la clé API
+            const activeKey = apiKey || ""; // Permet à l'environnement de fournir sa clé si apiKey est vide
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
+
+            const promptContext = `Historique:\n${historyContext.map(m => `${m.sender === 'user' ? 'Client' : 'IA'}: ${m.text}`).join('\n')}\n\nClient: ${userMessage}\nIA:`;
+
+            const payload = {
+                contents: [{ parts: [{ text: promptContext }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(geminiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0].content.parts[0].text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                    throw new Error("Réponse invalide de l'API");
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        // Gérer l'envoi d'un message
+        async function handleSendMessage(text) {
+            if (!text.trim() || isTyping) return;
+            
+            // 1. Ajouter le message utilisateur
+            chatHistory.push({ id: Date.now(), text: text, sender: 'user' });
+            renderMessages();
+            scrollToBottom();
+            chatInput.value = '';
+            
+            // 2. Activer l'état de chargement
+            isTyping = true;
+            typingIndicator.classList.remove('hidden');
+            chatSubmitBtn.disabled = true;
+            quickBtns.forEach(btn => btn.disabled = true);
+            scrollToBottom();
+
+            try {
+                // N'envoyer que les 4 derniers messages pour le contexte
+                const contextHistory = chatHistory.slice(-5, -1);
+                const aiResponse = await fetchGeminiResponse(text, contextHistory);
+                
+                chatHistory.push({ id: Date.now(), text: aiResponse, sender: 'ai' });
+            } catch (error) {
+                chatHistory.push({ 
+                    id: Date.now(), 
+                    text: "Désolé Bâtisseur, une micro-coupure réseau est survenue. Vérifiez que votre clé API Gemini est bien configurée dans le code HTML. Réessayez ensuite !", 
+                    sender: 'ai' 
+                });
+            } finally {
+                // 3. Désactiver l'état de chargement
+                isTyping = false;
+                typingIndicator.classList.add('hidden');
+                chatSubmitBtn.disabled = false;
+                quickBtns.forEach(btn => btn.disabled = false);
+                renderMessages();
+                scrollToBottom();
+            }
+        }
+
+        // Formulaire de Chat
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleSendMessage(chatInput.value);
+        });
+
+        // Boutons rapides (FAQ)
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const queryText = btn.getAttribute('data-query');
+                handleSendMessage(queryText);
+            });
+        });
+
+    </script>
+</body>
 </html>
