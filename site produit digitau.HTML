@@ -27,6 +27,18 @@
             background-color: #334155; 
             border-radius: 10px;
         }
+
+        /* Animations pour la diffusion (Social Proof) */
+        @keyframes slideInUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+        .toast-enter { animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-exit { animation: fadeOut 0.5s ease-out forwards; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans min-h-screen">
@@ -395,6 +407,11 @@
         </div>
     </footer>
 
+    <!-- CONTENEUR POUR LA DIFFUSION (SOCIAL PROOF) -->
+    <div id="social-proof-container" class="fixed bottom-6 left-6 z-50 flex flex-col gap-3 pointer-events-none">
+        <!-- Les toasts de notification apparaîtront ici -->
+    </div>
+
     <!-- CHATBOT IA GEMINI -->
     <div class="fixed bottom-6 right-6 z-50">
         <!-- Bouton d'ouverture flottant -->
@@ -402,10 +419,10 @@
             <i data-lucide="message-circle" class="w-8 h-8"></i>
         </button>
 
-        <!-- Fenêtre de chat -->
-        <div id="chatbot-window" class="hidden bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-[350px] sm:w-[400px] flex flex-col h-[550px] max-h-[85vh] overflow-hidden transition-all duration-300 transform scale-95 opacity-0 origin-bottom-right">
+        <!-- Fenêtre de chat (Corrigée pour mobile : max-w-[calc(100vw-3rem)]) -->
+        <div id="chatbot-window" class="hidden bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-[calc(100vw-3rem)] sm:w-[400px] flex flex-col h-[500px] max-h-[85vh] overflow-hidden transition-all duration-300 transform scale-95 opacity-0 origin-bottom-right">
             <!-- Header -->
-            <div class="bg-yellow-500 text-slate-900 p-4 flex justify-between items-center">
+            <div class="bg-yellow-500 text-slate-900 p-4 flex justify-between items-center shrink-0">
                 <div class="flex items-center space-x-3">
                     <div class="bg-slate-900 text-yellow-500 p-2 rounded-full">
                         <i data-lucide="brain" class="w-5 h-5"></i>
@@ -413,7 +430,7 @@
                     <div>
                         <span class="font-extrabold text-lg block leading-tight">IA Bâtisseur</span>
                         <span class="text-[11px] font-medium opacity-80 flex items-center">
-                            <i data-lucide="sparkles" class="w-3 h-3 mr-1 animate-pulse"></i> En ligne • Conseils instantanés
+                            <i data-lucide="sparkles" class="w-3 h-3 mr-1 animate-pulse"></i> En ligne • Conseils
                         </span>
                     </div>
                 </div>
@@ -428,7 +445,7 @@
             </div>
 
             <!-- Indicateur de frappe (caché par défaut) -->
-            <div id="typing-indicator" class="hidden px-5 pb-5">
+            <div id="typing-indicator" class="hidden px-5 pb-5 shrink-0">
                 <div class="flex justify-start">
                     <div class="bg-slate-800 text-slate-400 p-4 rounded-2xl rounded-bl-sm flex space-x-2 border border-slate-700">
                         <div class="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce"></div>
@@ -439,19 +456,18 @@
             </div>
 
             <!-- Quick questions -->
-            <div class="p-3 bg-slate-900/80 border-t border-slate-800 flex flex-col space-y-1.5">
+            <div class="p-3 bg-slate-900/80 border-t border-slate-800 flex flex-col space-y-1.5 shrink-0">
                 <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider px-1">Questions fréquentes :</span>
                 <div class="flex flex-wrap gap-1.5">
-                    <button class="quick-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate" data-query="Comment puis-je vaincre la distraction et rester concentré ?">🎯 Comment vaincre la distraction ?</button>
-                    <button class="quick-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate" data-query="Qu'est-ce qui est inclus dans le pack complet ?">📦 Que contient exactement le pack ?</button>
-                    <button class="quick-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate" data-query="Comment est-ce que je reçois le pack après avoir payé ?">⚡ Comment ça marche après l'achat ?</button>
+                    <button class="quick-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate" data-query="Comment puis-je vaincre la distraction ?">🎯 Vaincre la distraction</button>
+                    <button class="quick-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate" data-query="Qu'est-ce qui est inclus dans le pack complet ?">📦 Que contient le pack ?</button>
                 </div>
             </div>
 
             <!-- Input Form -->
-            <form id="chat-form" class="p-4 bg-slate-900 border-t border-slate-800 flex space-x-3">
-                <input type="text" id="chat-input" placeholder="Écris ton message ici..." autocomplete="off" class="flex-1 bg-slate-950 text-white border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-yellow-500 text-sm transition-colors" />
-                <button type="submit" id="chat-submit-btn" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-xl transition-colors disabled:opacity-50">
+            <form id="chat-form" class="p-3 sm:p-4 bg-slate-900 border-t border-slate-800 flex space-x-2 sm:space-x-3 shrink-0">
+                <input type="text" id="chat-input" placeholder="Écris ton message..." autocomplete="off" class="flex-1 bg-slate-950 text-white border border-slate-700 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:border-yellow-500 text-sm transition-colors" />
+                <button type="submit" id="chat-submit-btn" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-2 sm:p-3 rounded-xl transition-colors disabled:opacity-50">
                     <i data-lucide="send" class="w-5 h-5"></i>
                 </button>
             </form>
@@ -463,6 +479,56 @@
         // Initialiser les icônes Lucide
         lucide.createIcons();
         document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // =====================================
+        // SYSTÈME DE DIFFUSION (SOCIAL PROOF)
+        // =====================================
+        const recentBuyers = [
+            "Thomas (Lyon) vient de rejoindre l'Académie",
+            "Lucas (Bordeaux) a débloqué le pack complet",
+            "Hugo (Paris) a commencé son Réveil",
+            "Maxime (Bruxelles) a sécurisé son accès",
+            "Antoine (Genève) a rejoint l'Académie",
+            "Léo (Marseille) a téléchargé le Tracker",
+            "Arthur (Toulouse) vient de passer à l'action"
+        ];
+        
+        const socialProofContainer = document.getElementById('social-proof-container');
+
+        function showSocialProof() {
+            // Création de la notification
+            const toast = document.createElement('div');
+            toast.className = "bg-slate-900 border border-slate-700 rounded-xl p-3 shadow-lg flex items-center space-x-3 toast-enter pointer-events-auto max-w-[280px] sm:max-w-sm";
+            
+            const randomBuyer = recentBuyers[Math.floor(Math.random() * recentBuyers.length)];
+            const randomTime = Math.floor(Math.random() * 59) + 1; // 1 à 59 min
+            
+            toast.innerHTML = `
+                <div class="bg-green-500/20 p-2 rounded-full shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-white text-xs font-bold">${randomBuyer}</span>
+                    <span class="text-slate-400 text-[10px]">Il y a ${randomTime} min</span>
+                </div>
+            `;
+            
+            socialProofContainer.appendChild(toast);
+
+            // Faire disparaître après 5 secondes
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 500); // Nettoyer le DOM après l'animation
+            }, 5000);
+        }
+
+        // Lancer une notification toutes les 15 à 25 secondes
+        setTimeout(() => {
+            showSocialProof();
+            setInterval(showSocialProof, Math.floor(Math.random() * 10000) + 15000); 
+        }, 5000);
+
 
         // =====================================
         // LOGIQUE DU FORMULAIRE DE CONTACT
@@ -477,7 +543,6 @@
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // État de chargement
             submitBtn.disabled = true;
             btnText.textContent = "Transmission en cours...";
             btnIcon.setAttribute('data-lucide', 'loader-2');
@@ -508,7 +573,6 @@
                 formError.classList.remove('hidden');
                 formSuccess.classList.add('hidden');
             } finally {
-                // Rétablir l'état par défaut après 5 secondes
                 setTimeout(() => {
                     submitBtn.disabled = false;
                     btnText.textContent = "Envoyer le message";
@@ -522,10 +586,14 @@
         });
 
         // =====================================
-        // LOGIQUE DU CHATBOT GEMINI
+        // LOGIQUE DU CHATBOT GEMINI (CORRIGÉE)
         // =====================================
         
-        // IMPORTANT : Renseignez ici votre clé API Gemini (AIzaSy...)
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // ATTENTION : POUR QUE L'IA FONCTIONNE SUR GITHUB PAGES,
+        // TU DOIS OBLIGATOIREMENT COLLER TA CLÉ API CI-DESSOUS.
+        // Exemple : const apiKey = "AIzaSyDa...etc";
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         const apiKey = ""; 
 
         const systemPrompt = `Tu es l'assistant virtuel officiel de "L'Académie des Bâtisseurs". 
@@ -578,17 +646,15 @@
             setTimeout(() => {
                 chatWindow.classList.add('hidden');
                 chatToggleBtn.classList.remove('hidden');
-            }, 300); // Wait for transition
+            }, 300);
         });
 
-        // Scroll vers le bas du chat
         function scrollToBottom() {
             setTimeout(() => {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }, 50);
         }
 
-        // Afficher les messages
         function renderMessages() {
             chatMessages.innerHTML = '';
             chatHistory.forEach(msg => {
@@ -596,7 +662,7 @@
                 div.className = `flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`;
                 
                 const bubble = document.createElement('div');
-                bubble.className = `max-w-[85%] p-4 rounded-2xl text-[15px] leading-relaxed shadow-md ${
+                bubble.className = `max-w-[85%] p-3 sm:p-4 rounded-2xl text-[14px] sm:text-[15px] leading-relaxed shadow-md ${
                     msg.sender === 'user' 
                     ? 'bg-yellow-500 text-slate-900 font-medium rounded-br-sm' 
                     : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-sm'
@@ -608,15 +674,16 @@
             });
         }
 
-        // Appel à l'API Gemini
         async function fetchGeminiResponse(userMessage, historyContext) {
+            // Verification super stricte pour informer l'utilisateur si la clé est manquante.
+            const activeKey = apiKey || ""; 
+            if(activeKey === "") {
+                throw new Error("API_KEY_MISSING");
+            }
+
             const maxRetries = 5;
             let delay = 1000;
-            
-            // Construit l'URL avec la clé API
-            const activeKey = apiKey || ""; // Permet à l'environnement de fournir sa clé si apiKey est vide
             const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${activeKey}`;
-
             const promptContext = `Historique:\n${historyContext.map(m => `${m.sender === 'user' ? 'Client' : 'IA'}: ${m.text}`).join('\n')}\n\nClient: ${userMessage}\nIA:`;
 
             const payload = {
@@ -640,6 +707,7 @@
                     }
                     throw new Error("Réponse invalide de l'API");
                 } catch (error) {
+                    if (error.message === "API_KEY_MISSING") throw error; // Ne pas retry si pas de clé
                     if (i === maxRetries - 1) throw error;
                     await new Promise(res => setTimeout(res, delay));
                     delay *= 2;
@@ -647,17 +715,14 @@
             }
         }
 
-        // Gérer l'envoi d'un message
         async function handleSendMessage(text) {
             if (!text.trim() || isTyping) return;
             
-            // 1. Ajouter le message utilisateur
             chatHistory.push({ id: Date.now(), text: text, sender: 'user' });
             renderMessages();
             scrollToBottom();
             chatInput.value = '';
             
-            // 2. Activer l'état de chargement
             isTyping = true;
             typingIndicator.classList.remove('hidden');
             chatSubmitBtn.disabled = true;
@@ -665,19 +730,20 @@
             scrollToBottom();
 
             try {
-                // N'envoyer que les 4 derniers messages pour le contexte
                 const contextHistory = chatHistory.slice(-5, -1);
                 const aiResponse = await fetchGeminiResponse(text, contextHistory);
                 
                 chatHistory.push({ id: Date.now(), text: aiResponse, sender: 'ai' });
             } catch (error) {
-                chatHistory.push({ 
-                    id: Date.now(), 
-                    text: "Désolé Bâtisseur, une micro-coupure réseau est survenue. Vérifiez que votre clé API Gemini est bien configurée dans le code HTML. Réessayez ensuite !", 
-                    sender: 'ai' 
-                });
+                let errorMsg = "Désolé, une erreur réseau est survenue. Peux-tu réessayer ?";
+                
+                // Explication claire si la clé est manquante.
+                if (error.message === "API_KEY_MISSING") {
+                    errorMsg = "⚠️ ERREUR : La clé API n'est pas configurée. Si tu héberges ce site sur GitHub Pages, ouvre le code et place ta clé Gemini à la ligne : const apiKey = 'TA_CLE_ICI';";
+                }
+                
+                chatHistory.push({ id: Date.now(), text: errorMsg, sender: 'ai' });
             } finally {
-                // 3. Désactiver l'état de chargement
                 isTyping = false;
                 typingIndicator.classList.add('hidden');
                 chatSubmitBtn.disabled = false;
@@ -687,13 +753,11 @@
             }
         }
 
-        // Formulaire de Chat
         chatForm.addEventListener('submit', (e) => {
             e.preventDefault();
             handleSendMessage(chatInput.value);
         });
 
-        // Boutons rapides (FAQ)
         quickBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const queryText = btn.getAttribute('data-query');
