@@ -1,820 +1,684 @@
-<!DOCTYPE html>
-<html lang="fr" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORYZE | Marketing Digital & Produits Digitaux en Afrique</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Découvrez la méthode d'ORYZE pour concevoir et lancer vos premiers produits digitaux depuis l'Afrique sans budget. Télécharge ton guide gratuit !">
-    <meta name="keywords" content="marketing digital afrique, business en ligne afrique, apprendre le digital, comment vendre sur tiktok, creer un ebook, oryze, formation marketing digital, outils gratuits business, entreprendre en afrique">
-    <meta name="author" content="ORYZE">
-    <meta name="robots" content="index, follow">
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  CheckCircle2, 
+  ChevronRight, 
+  Zap, 
+  Brain, 
+  Target, 
+  BookOpen, 
+  Sun, 
+  Calendar, 
+  MessageCircle, 
+  X, 
+  Send, 
+  Loader2,
+  ShieldAlert,
+  Star,
+  Phone,
+  Quote,
+  Sparkles
+} from 'lucide-react';
 
-    <!-- Open Graph / Facebook Meta Tags -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://axizmkxg.mychariow.shop">
-    <meta property="og:title" content="ORYZE | Produits Digitaux en Afrique">
-    <meta property="og:description" content="La méthode honnête pour concevoir et lancer vos premiers produits digitaux depuis l'Afrique sans budget de départ.">
-    <meta property="og:image" content="WhatsApp Image 2026-06-01 at 21.58.04_2.jpeg">
+// --- CONSTANTES ---
+const THEME = {
+  primary: 'bg-yellow-500',
+  primaryHover: 'hover:bg-yellow-400',
+  textPrimary: 'text-yellow-500',
+  dark: 'bg-slate-900',
+  darker: 'bg-slate-950',
+};
 
-    <!-- Twitter Meta Tags -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://axizmkxg.mychariow.shop">
-    <meta property="twitter:title" content="ORYZE | Produits Digitaux en Afrique">
-    <meta property="twitter:description" content="Créez votre premier ebook et lancez votre projet sur TikTok sans budget de départ.">
-    <meta property="twitter:image" content="WhatsApp Image 2026-06-01 at 21.58.04_2.jpeg">
+const PAYMENT_LINK = "https://axizmkxg.mychariow.shop/prd_9cc2zy2j";
+const PHONE_NUMBER = "+242056435520";
 
-    <!-- Favicon dynamique sécurisé -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a0a'/%3E%3Ctext y='65' x='10' fill='%23dc2626' font-family='Oswald, sans-serif' font-weight='bold' font-size='60'%3EO.%3C/text%3E%3C/svg%3E">
+// --- API GEMINI (IA) ---
+// REGLE CRUCIALLE : Laissez cette variable strictement vide (""). 
+// L'environnement de test injectera lui-même la bonne clé de manière transparente au runtime.
+const apiKey = ""; 
 
-    <!-- Fonts Google sécurisées par HTTPS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Icons FontAwesome pour le style premium -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+const systemPrompt = `Tu es l'assistant virtuel officiel de "L'Académie des Bâtisseurs". 
+Ton rôle est d'accompagner les visiteurs avec bienveillance et de les motiver à surmonter les blocages du quotidien (procrastination, distractions des réseaux sociaux, manque de discipline, perte d'attention) en adoptant des habitudes de vie saines (sport, sommeil de qualité, lecture, planification des études).
+Tu réponds à leurs questions sur le pack "Le Réveil du Bâtisseur : De la Pulsion à la Puissance" et tu les encourages à l'acquérir pour structurer leur réussite.
 
-    <!-- Tailwind CSS personnalisé -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            black: '#0a0a0a',
-                            red: '#dc2626',
-                            dark: '#141414',
-                            gray: '#262626',
-                            textGray: '#a3a3a3'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Oswald', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+Détails essentiels du pack :
+- Prix : 4 999 FCFA (s'adapte à la devise locale).
+- Contenu : 
+  1. Ebook principal "Le Réveil du Bâtisseur" : Guide d'autodiscipline, de concentration et de saines habitudes.
+  2. Bonus 1 "La Routine Matinale du Bâtisseur" : Techniques pour démarrer fort, faire du sport et étudier sereinement chaque matin.
+  3. Bonus 2 "Le Tracker des 30 Jours" : Outil de suivi visuel pour valider ses efforts quotidiens (devoirs, lecture, sport).
+- Contact WhatsApp de l'équipe : +242 056435520.
 
-    <style>
-        body {
-            background-color: #0a0a0a;
-            color: #ffffff;
-            scroll-behavior: smooth;
-        }
+Consignes de communication :
+- Adopte un ton dynamique, inspirant, digne, respectueux et très axé sur le développement sain du potentiel.
+- Sois clair, concis et direct.
+- Reste toujours dans un cadre sain, positif et encourageant (sport, études, concentration, saines habitudes). Redirige toujours poliment vers l'autodiscipline positive si la discussion dévie.`;
 
-        /* Barre de défilement premium personnalisée */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0a0a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #dc2626;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #b91c1c;
-        }
+const fetchGeminiResponse = async (userMessage, history) => {
+  const maxRetries = 5;
+  let delay = 1000;
+  
+  // URL de l'API Gemini utilisant la constante apiKey sans validation intermédiaire
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
-        .hover-glow:hover {
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
-            transform: translateY(-3px);
-            transition: all 0.3s ease;
-        }
+  const promptContext = `Historique:\n${history.map(m => `${m.sender === 'user' ? 'Client' : 'IA'}: ${m.text}`).join('\n')}\n\nClient: ${userMessage}\nIA:`;
 
-        .border-animation {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .border-animation::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: #dc2626;
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.3s ease-in-out;
-        }
+  const payload = {
+    contents: [{ parts: [{ text: promptContext }] }],
+    systemInstruction: { parts: [{ text: systemPrompt }] }
+  };
 
-        .border-animation:hover::after {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-        /* Indicateur de statut En Ligne pulsant */
-        .pulse-dot {
-            animation: pulse 2s infinite;
-        }
+      const data = await response.json();
+      if (data.candidates && data.candidates[0].content.parts[0].text) {
+        return data.candidates[0].content.parts[0].text;
+      }
+      throw new Error("Réponse invalide de l'API");
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await new Promise(res => setTimeout(res, delay));
+      delay *= 2; // Attente exponentielle
+    }
+  }
+};
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
-        }
-
-        /* Animation d'apparition d'un avis */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-    </style>
-</head>
-<body class="font-sans antialiased overflow-x-hidden">
-
-    <!-- Header Fixé -->
-    <header class="fixed w-full top-0 z-50 bg-brand-black/95 backdrop-blur-md border-b border-brand-red/15 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex-shrink-0 flex items-center gap-2">
-                    <a href="#" class="font-heading font-bold text-3xl tracking-wider text-white">ORYZE<span class="text-brand-red">.</span></a>
-                    <span class="flex h-2 w-2 relative">
-                        <span class="pulse-dot absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-red"></span>
-                    </span>
-                </div>
-                
-                <div class="flex items-center gap-4">
-                    <a href="https://axizmkxg.mychariow.shop" target="_blank" rel="noopener noreferrer" class="hover-glow inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-xs sm:text-sm font-bold uppercase tracking-wide rounded-md text-white bg-brand-red hover:bg-red-700 transition-all duration-300">
-                        Accéder à la boutique
-                        <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-xs"></i>
-                    </a>
-                </div>
-            </div>
+export default function App() {
+  return (
+    <div className={`min-h-screen text-slate-200 font-sans ${THEME.dark}`}>
+      {/* NAVIGATION */}
+      <nav className={`${THEME.darker} p-4 sticky top-0 z-40 border-b border-slate-800 shadow-md backdrop-blur-md bg-opacity-90`}>
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <ShieldAlert className={THEME.textPrimary} size={32} />
+            <span className="text-xl md:text-2xl font-bold tracking-wider text-white">L'Académie des Bâtisseurs</span>
+          </div>
+          <button 
+            onClick={() => document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' })}
+            className="hidden md:flex bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors border border-slate-700"
+          >
+            Obtenir le pack
+          </button>
         </div>
-    </header>
+      </nav>
 
-    <!-- Section Hero -->
-    <section class="relative pt-36 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-gradient-to-b from-brand-black to-brand-dark">
-        <!-- Fond décoratif flouté rouge -->
-        <div class="absolute top-0 right-0 -translate-y-12 translate-x-1/3">
-            <div class="w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-brand-red rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+      <main>
+        <HeroSection />
+        <PainPointsSection />
+        <ValuePropositionSection />
+        <ProductsSection />
+        <ReviewsSection />
+        <PricingSection />
+        <ContactSection />
+      </main>
+
+      <Chatbot />
+      
+      {/* FOOTER */}
+      <footer className={`${THEME.darker} py-12 text-center text-slate-500 text-sm border-t border-slate-800`}>
+        <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">
+          <ShieldAlert className="text-slate-700 mb-4" size={40} />
+          <p className="mb-2 text-base">&copy; {new Date().getFullYear()} L'Académie des Bâtisseurs. Tous droits réservés.</p>
+          <p className="text-xs max-w-md mx-auto">
+            Ce site ne fait pas partie du site web Facebook ou de Facebook Inc. De plus, ce site n'est en aucun cas approuvé par Facebook. FACEBOOK est une marque déposée de FACEBOOK, Inc.
+          </p>
+          <div className="mt-6 flex space-x-4 items-center justify-center">
+            <span className="flex items-center"><Zap size={14} className="mr-1 text-yellow-500"/> Paiement 100% Sécurisé</span>
+            <span className="flex items-center"><Zap size={14} className="mr-1 text-yellow-500"/> Accès Immédiat après paiement</span>
+          </div>
         </div>
-        
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center max-w-4xl mx-auto">
-                
-                <!-- Mise en scène professionnelle du Logo Officiel -->
-                <div class="flex justify-center mb-8">
-                    <div class="relative group">
-                        <!-- Effet de lueur rouge pulsante en arrière-plan -->
-                        <div class="absolute -inset-1.5 rounded-full bg-brand-red opacity-30 blur-2xl group-hover:opacity-50 transition duration-1000 animate-pulse"></div>
-                        <img src="WhatsApp Image 2026-06-01 at 21.58.04_2.jpeg" alt="Logo Officiel ORYZE" class="relative w-36 h-36 md:w-44 md:h-44 object-contain rounded-full border-4 border-brand-red/40 shadow-[0_0_40px_rgba(220,38,38,0.4)] transition-transform duration-500 hover:scale-105" onerror="this.src='https://placehold.co/200/0a0a0a/dc2626?text=ORYZE'">
-                    </div>
-                </div>
-
-                <p class="text-brand-red font-bold tracking-widest uppercase mb-4 text-xs sm:text-sm md:text-base">
-                    <i class="fa-solid fa-chart-line mr-2"></i>Produits Digitaux en Afrique
-                </p>
-                <h1 class="font-heading text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight uppercase tracking-tight">
-                    Apprends à vendre tes <span class="text-brand-red">premiers produits digitaux</span> depuis l'Afrique
-                </h1>
-                
-                <!-- Phrase d'accroche authentique et réaliste -->
-                <p class="mt-4 text-sm sm:text-base md:text-lg text-brand-textGray mb-10 max-w-2xl mx-auto font-light leading-relaxed">
-                    Le secret n'est pas de chercher la richesse rapide, mais d'apprendre à concevoir, packager et distribuer de la valeur réelle avec les bons outils. <br>
-                    <span class="text-white font-semibold">Commence à bâtir des compétences solides dès aujourd'hui.</span>
-                </p>
-
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="https://axizmkxg.mychariow.shop" target="_blank" rel="noopener noreferrer" class="hover-glow inline-flex items-center justify-center px-8 py-4 border border-transparent text-sm sm:text-base font-bold uppercase tracking-widest rounded-md text-white bg-brand-red hover:bg-red-700 transition-all duration-300 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
-                        Découvrir mes produits
-                        <i class="fa-solid fa-basket-shopping ml-2"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Qui suis-je -->
-    <section id="qui-suis-je" class="py-20 bg-brand-dark border-y border-brand-red/10 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-                <div class="mb-10 lg:mb-0 relative max-w-md mx-auto lg:max-w-none">
-                    <!-- Conteneur d'image avec Portrait Réaliste d'Oryze + Badge du Logo Officiel -->
-                    <div class="aspect-square rounded-lg overflow-hidden border-l-4 border-b-4 border-brand-red relative group shadow-2xl animate-fade-in">
-                       <!-- Portrait de l'entrepreneur -->
-                       <img src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&q=80&w=600&h=600" alt="Oryze - Créateur de Contenu" class="object-cover w-full h-full transition-all duration-500 transform group-hover:scale-105">
-                       
-                       <!-- Badge du Logo Officiel superposé (Double protection contre les vols d'images) -->
-                       <div class="absolute bottom-4 right-4 w-20 h-20 rounded-full border-2 border-brand-red bg-white p-1.5 shadow-xl transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-300 z-10 flex items-center justify-center">
-                           <img src="WhatsApp Image 2026-06-01 at 21.58.04_2.jpeg" alt="Badge de certification ORYZE" class="w-full h-full object-contain rounded-full" onerror="this.src='https://placehold.co/100/ffffff/dc2626?text=O.'">
-                       </div>
-                    </div>
-                </div>
-                <div>
-                    <h2 class="font-heading text-3xl sm:text-4xl font-bold uppercase mb-2 text-white">
-                        Qui suis-je ?
-                    </h2>
-                    <div class="w-16 h-1 bg-brand-red mb-6"></div>
-                    
-                    <p class="text-base sm:text-lg text-brand-textGray mb-6 leading-relaxed">
-                        Salut, c'est <span class="font-bold text-white">Oryze</span>. Je suis créateur de contenu et expert en marketing digital basé en Afrique.
-                    </p>
-                    <p class="text-base sm:text-lg text-brand-textGray mb-6 leading-relaxed">
-                        J'ai remarqué que trop de jeunes africains se lançaient sans repères, en copiant des méthodes occidentales inadaptées à nos réalités (moyens de paiement, pouvoir d'achat, culture).
-                    </p>
-                    <p class="text-base sm:text-lg text-brand-textGray leading-relaxed border-l-2 border-brand-red pl-4 italic">
-                        Ma mission : te montrer comment créer, packager et distribuer tes propres produits digitaux (Ebooks, templates) en utilisant uniquement ton téléphone et des outils 100% gratuits. Suis-moi sur mon canal principal : 
-                        <a href="https://www.tiktok.com/@oryze0?_r=1&_t=ZS-96sVl6XboWW" target="_blank" rel="noopener noreferrer" class="inline-flex items-center font-bold text-brand-red hover:underline ml-1">
-                            <i class="fa-brands fa-tiktok mr-1"></i>@oryze0
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Ce que je propose (Optimisée à 2 Cartes) -->
-    <section id="produits" class="py-24 relative bg-brand-black">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-heading text-3xl sm:text-5xl font-bold uppercase text-white mb-4">Ce que je propose</h2>
-                <div class="w-24 h-1 bg-brand-red mx-auto mb-4"></div>
-                <p class="text-brand-textGray text-base sm:text-lg max-w-2xl mx-auto">Des ressources concrètes pour passer de consommateur à créateur de valeur.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- Ebooks -->
-                <div class="bg-brand-dark p-8 rounded-lg border border-brand-red/20 border-t-4 border-t-brand-red hover-glow flex flex-col h-full transition-all duration-300">
-                    <div class="text-brand-red mb-4 text-3xl">
-                        <i class="fa-solid fa-book-open"></i>
-                    </div>
-                    <h3 class="font-heading text-2xl font-bold uppercase mb-3 text-white">Ebooks Pratiques</h3>
-                    <p class="text-brand-textGray flex-grow text-sm sm:text-base">Des guides complets, authentiques et sans filtre pour apprendre des compétences spécifiques et applicables immédiatement sur le marché africain.</p>
-                    <div class="mt-6">
-                        <a href="https://axizmkxg.mychariow.shop" target="_blank" rel="noopener noreferrer" class="text-brand-red font-bold text-sm tracking-wider uppercase inline-flex items-center hover:underline">
-                            Voir sur la boutique <i class="fa-solid fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Formations en ligne (Bientôt disponible avec Badge rouge) -->
-                <div class="bg-brand-dark p-8 rounded-lg border border-brand-red/20 border-t-4 border-t-brand-red hover-glow flex flex-col h-full relative overflow-hidden transition-all duration-300">
-                    <div class="absolute top-0 right-0 bg-brand-red text-white text-xs font-bold px-4 py-1.5 uppercase tracking-widest rounded-bl-lg">Prochainement</div>
-                    <div class="text-brand-red mb-4 text-3xl">
-                        <i class="fa-solid fa-video"></i>
-                    </div>
-                    <h3 class="font-heading text-2xl font-bold uppercase mb-3 text-white">Formation en ligne</h3>
-                    <p class="text-brand-textGray flex-grow text-sm sm:text-base">Un programme vidéo pas-à-pas complet pour maîtriser la création de contenu sur TikTok et automatiser la distribution de tes services en Afrique.</p>
-                    <div class="mt-6">
-                        <span class="text-neutral-500 font-bold text-sm tracking-widest uppercase inline-flex items-center">
-                            Bientôt disponible <i class="fa-solid fa-lock ml-2"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Produit gratuit -->
-    <section class="py-20 bg-brand-red/10 relative overflow-hidden border-y border-brand-red/15">
-        <div class="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-red via-transparent to-transparent"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="bg-brand-black/80 rounded-2xl p-8 md:p-12 border border-brand-red/20 shadow-2xl flex flex-col md:flex-row items-center gap-10">
-                <div class="w-full md:w-1/3 flex justify-center">
-                    <!-- Maquette d'Ebook interactive -->
-                    <div class="w-48 h-64 bg-zinc-900 border border-brand-red/30 shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-300 p-4 flex flex-col justify-between relative group">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-brand-red transform translate-x-4 -translate-y-4 -z-10 rounded-br-3xl"></div>
-                        <div>
-                            <div class="w-10 h-1 bg-brand-red mb-2"></div>
-                            <div class="text-[8px] text-white font-bold tracking-widest bg-brand-red inline-block px-1 mb-2">EBOOK GRATUIT</div>
-                            <h4 class="text-white font-heading font-black text-xl leading-tight uppercase">LE GUIDE DU<br><span class="text-brand-red">DÉBUTANT</span></h4>
-                        </div>
-                        <div class="text-brand-red font-heading font-black tracking-widest text-lg">ORYZE</div>
-                    </div>
-                </div>
-                <div class="w-full md:w-2/3 text-center md:text-left">
-                    <h2 class="font-heading text-3xl md:text-5xl font-bold uppercase text-white mb-4">Démarre sans budget</h2>
-                    <p class="text-brand-textGray text-base sm:text-lg mb-8 max-w-xl leading-relaxed">
-                        Télécharge mon ebook 100% gratuit <strong>"Le Guide du Débutant"</strong>. Découvre la méthode exacte pour concevoir ton premier produit et structurer ta présence en ligne.
-                    </p>
-                    <a href="https://axizmkxg.mychariow.shop/prd_3t0ey6tx" target="_blank" rel="noopener noreferrer" class="hover-glow inline-flex items-center justify-center px-8 py-4 border-2 border-brand-red text-sm sm:text-base font-bold uppercase tracking-widest rounded-md text-white bg-brand-red hover:bg-transparent hover:border-brand-red transition-all duration-300 w-full md:w-auto">
-                        Télécharger gratuitement
-                        <i class="fa-solid fa-download ml-2"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Avis et Témoignages (Stockage LocalStorage & Réels uniquement) -->
-    <section id="avis" class="py-24 bg-brand-black border-b border-brand-red/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-heading text-3xl sm:text-5xl font-bold uppercase text-white mb-4">Avis & Témoignages</h2>
-                <div class="w-24 h-1 bg-brand-red mx-auto mb-4"></div>
-                <p class="text-brand-textGray text-base sm:text-lg max-w-2xl mx-auto">Découvre les retours d'expérience authentiques des membres de la communauté.</p>
-            </div>
-
-            <!-- Grille Dynamique des Témoignages réels -->
-            <div id="testimonials-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                <!-- Les avis soumis s'afficheront dynamiquement ici -->
-            </div>
-
-            <!-- Formulaire d'envoi d'avis sécurisé -->
-            <div class="max-w-xl mx-auto bg-brand-dark p-8 rounded-xl border border-brand-red/20 shadow-xl">
-                <h3 class="font-heading text-2xl font-bold uppercase text-white mb-2 text-center">Partage ton expérience</h3>
-                <p id="encouragement-text" class="text-brand-textGray text-sm text-center mb-6">Sois le premier à partager ton expérience 🌍</p>
-                
-                <form id="feedback-form" action="https://formspree.io/f/xojybyaz" method="POST" class="space-y-4" novalidate>
-                    <!-- Protection anti-spam Honeypot -->
-                    <input type="text" name="_gotcha" class="hidden">
-                    
-                    <div>
-                        <label for="review-name" class="block text-xs font-bold uppercase tracking-wider text-brand-textGray mb-1">Ton Prénom *</label>
-                        <input type="text" id="review-name" name="name" required maxlength="30" class="w-full bg-brand-black border border-brand-red/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-brand-red transition-all" placeholder="Ex: Chérif">
-                    </div>
-
-                    <div>
-                        <label for="review-email" class="block text-xs font-bold uppercase tracking-wider text-brand-textGray mb-1">Adresse Email * (pour validation administrative)</label>
-                        <input type="email" id="review-email" name="email" required class="w-full bg-brand-black border border-brand-red/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-brand-red transition-all" placeholder="votre-adresse@email.com">
-                    </div>
-
-                    <div>
-                        <label for="review-text" class="block text-xs font-bold uppercase tracking-wider text-brand-textGray mb-1">Ton Message * (max 300 caract.)</label>
-                        <textarea id="review-text" name="message" rows="4" required maxlength="300" class="w-full bg-brand-black border border-brand-red/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-brand-red transition-all resize-none" placeholder="Explique comment les outils d'Oryze t'ont aidé..."></textarea>
-                    </div>
-
-                    <button type="submit" id="feedback-submit-btn" class="w-full hover-glow bg-brand-red text-white font-bold uppercase py-3.5 px-6 rounded-md transition-all tracking-wider text-sm flex items-center justify-center gap-2">
-                        Publier mon avis
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </form>
-                
-                <!-- Message de succès dynamique -->
-                <div id="form-success-msg" class="hidden mt-4 p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-md text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span id="form-success-text">Merci ! Ton avis a été pris en compte et sera enregistré localement.</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section TikTok -->
-    <section id="tiktok" class="py-24 bg-brand-dark border-t border-brand-red/10 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="font-heading text-4xl md:text-5xl font-bold uppercase text-white mb-4">Suis mon parcours en direct</h2>
-            <p class="text-brand-textGray text-base sm:text-lg max-w-2xl mx-auto mb-12">Je documente mon processus d'apprentissage, mes stratégies de création et mes projets en temps réel sur TikTok.</p>
-            
-            <a href="https://www.tiktok.com/@oryze0?_r=1&_t=ZS-96sVl6XboWW" target="_blank" rel="noopener noreferrer" class="hover-glow inline-flex items-center justify-center gap-3 px-8 py-4 bg-brand-black border border-brand-red/30 rounded-full text-white font-bold text-lg sm:text-xl transition-all duration-300 mb-16">
-                <i class="fa-brands fa-tiktok text-brand-red text-2xl"></i>
-                @oryze0
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-1 text-brand-textGray"></i>
-            </a>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <div class="bg-brand-black border border-brand-red/15 p-8 rounded-lg border-b-4 border-b-brand-red hover:border-brand-red/40 transition-all duration-300">
-                    <div class="text-4xl sm:text-5xl font-heading font-black text-white mb-1">1 130</div>
-                    <div class="text-brand-red text-xs sm:text-sm font-bold uppercase tracking-widest">Abonnés</div>
-                </div>
-                <div class="bg-brand-black border border-brand-red/15 p-8 rounded-lg border-b-4 border-b-brand-red hover:border-brand-red/40 transition-all duration-300">
-                    <div class="text-4xl sm:text-5xl font-heading font-black text-white mb-1">+30K</div>
-                    <div class="text-brand-red text-xs sm:text-sm font-bold uppercase tracking-widest">Vues cumulées</div>
-                </div>
-                <div class="bg-brand-black border border-brand-red/15 p-8 rounded-lg border-b-4 border-b-brand-red hover:border-brand-red/40 transition-all duration-300">
-                    <div class="text-4xl sm:text-5xl font-heading font-black text-white mb-1">100%</div>
-                    <div class="text-brand-red text-xs sm:text-sm font-bold uppercase tracking-widest">Gratuit (L'Ebook)</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section Contact Direct -->
-    <section id="contact" class="py-20 bg-brand-black border-t border-brand-red/15 relative overflow-hidden">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-            <h2 class="font-heading text-3xl sm:text-4xl font-bold uppercase text-white mb-3">Contact direct</h2>
-            <p class="text-brand-textGray text-base sm:text-lg mb-8 max-w-xl mx-auto">Pose tes questions et reçois une réponse rapidement.</p>
-            
-            <div class="bg-brand-dark p-8 rounded-xl border border-brand-red/25 max-w-md mx-auto hover-glow transition-all">
-                <div class="w-16 h-16 bg-brand-red/10 rounded-full flex items-center justify-center text-brand-red text-3xl mx-auto mb-6">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </div>
-                
-                <p class="text-sm text-brand-textGray mb-6">Une question sur nos ebooks ou un souci technique lors du téléchargement ? Écris-moi directement sur WhatsApp, je te réponds personnellement.</p>
-                
-                <a href="https://wa.me/242056435520" target="_blank" rel="noopener noreferrer" class="hover-glow w-full inline-flex items-center justify-center px-6 py-4 bg-brand-red hover:bg-red-700 text-white font-bold uppercase rounded-md transition-all text-sm tracking-wider">
-                    <i class="fa-brands fa-whatsapp text-lg mr-2"></i>
-                    Discuter sur WhatsApp
-                </a>
-                
-                <p class="text-[11px] text-zinc-500 mt-4"><i class="fa-solid fa-lock mr-1"></i> Échanges sécurisés et réponses généralement sous 2 heures.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-brand-black py-12 border-t border-brand-red/20 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-            <a href="#" class="font-heading font-bold text-4xl tracking-wider text-white mb-4">ORYZE<span class="text-brand-red">.</span></a>
-            
-            <!-- Lien collaborer avec moi -->
-            <div class="mb-6">
-                <a href="https://wa.me/242056435520?text=Bonjour%20Oryze%2C%20je%20souhaite%20vous%20proposer%20une%20collaboration.%20Voici%20mon%20projet%20%3A%20" target="_blank" rel="noopener noreferrer" class="text-brand-red hover:text-white transition-colors text-sm sm:text-base font-bold uppercase tracking-wider border-b border-brand-red pb-1">
-                    <i class="fa-solid fa-handshake mr-1"></i> Collaborer avec moi
-                </a>
-            </div>
-
-            <div class="flex gap-6 mb-8">
-                <a href="https://www.tiktok.com/@oryze0?_r=1&_t=ZS-96sVl6XboWW" target="_blank" rel="noopener noreferrer" class="text-brand-textGray hover:text-white transition-colors text-2xl">
-                    <span class="sr-only">TikTok</span>
-                    <i class="fa-brands fa-tiktok"></i>
-                </a>
-                <a href="https://wa.me/242056435520" target="_blank" rel="noopener noreferrer" class="text-brand-textGray hover:text-white transition-colors text-2xl">
-                    <span class="sr-only">WhatsApp</span>
-                    <i class="fa-brands fa-whatsapp"></i>
-                </a>
-            </div>
-            
-            <p class="text-brand-textGray text-xs sm:text-sm text-center">
-                &copy; 2026 ORYZE. Tous droits réservés. <br class="md:hidden">Créé pour propulser les créateurs en Afrique.
-            </p>
-        </div>
-    </footer>
-
-    <!-- Bouton Retour en haut -->
-    <button id="btn-back-to-top" aria-label="Retourner en haut" class="fixed bottom-6 left-6 z-40 bg-brand-red/80 hover:bg-brand-red text-white w-11 h-11 rounded-full flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 shadow-lg border border-white/10">
-        <i class="fa-solid fa-arrow-up"></i>
-    </button>
-
-    <!-- BOUTON FIXE DE DEMANDE D'ACCOMPAGNEMENT WHATSAPP -->
-    <a href="https://wa.me/242056435520?text=Bonjour%20Oryze%2C%20je%20suis%20int%C3%A9ress%C3%A9(e)%20par%20un%20accompagnement%20personnalis%C3%A9.%20Pouvez-vous%20me%20donner%20plus%20d'informations%20%3F" target="_blank" rel="noopener noreferrer" class="hover-glow fixed bottom-24 right-6 z-40 inline-flex items-center gap-2 px-5 py-3 bg-brand-red text-white text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded-full shadow-2xl transition-transform duration-300 hover:scale-105">
-        <i class="fa-solid fa-user-tie"></i>
-        <span>Demander un accompagnement</span>
-    </a>
-
-    <!-- ASSISTANT IA INTERACTIF ET FLOTTANT SÉCURISÉ -->
-    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-        <!-- Bulle d'accueil temporaire -->
-        <div id="ai-chat-bubble" class="bg-brand-dark border border-brand-red/40 text-white rounded-lg p-3 text-xs shadow-xl max-w-[200px] mb-2 transform scale-0 transition-all duration-300 origin-bottom-right">
-            <p class="font-bold text-brand-red mb-1">Besoin d'aide ? 🚀</p>
-            <p>Pose-moi tes questions sur l'univers d'Oryze !</p>
-        </div>
-
-        <!-- Bouton flottant du Chat -->
-        <button id="ai-chat-trigger" aria-label="Ouvrir le chat d'aide" class="hover-glow bg-brand-red text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 hover:scale-105 relative">
-            <i id="ai-icon-open" class="fa-solid fa-comment-dots text-xl"></i>
-            <i id="ai-icon-close" class="fa-solid fa-xmark text-xl hidden"></i>
-            <span class="absolute top-0 right-0 flex h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-            </span>
-        </button>
-
-        <!-- Fenêtre du Chat principal -->
-        <div id="ai-chat-container" class="w-[310px] sm:w-[360px] h-[450px] bg-brand-dark border border-brand-red/35 rounded-xl shadow-2xl flex flex-col overflow-hidden transform scale-0 origin-bottom-right transition-all duration-300 pointer-events-none absolute bottom-16 right-0">
-            <!-- Header du Chat -->
-            <div class="bg-brand-black p-4 border-b border-brand-red/25 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-brand-red flex items-center justify-center">
-                        <i class="fa-solid fa-robot text-sm"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-heading font-bold uppercase tracking-wide text-white">Assistant ORYZE</h4>
-                        <span class="text-[10px] text-emerald-500 flex items-center gap-1">
-                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            En ligne
-                        </span>
-                    </div>
-                </div>
-                <button id="ai-chat-close" aria-label="Fermer le chat" class="text-brand-textGray hover:text-white transition-colors">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <!-- Zone de messages -->
-            <div id="ai-chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 flex flex-col">
-                <!-- Messages d'accueil de l'assistant -->
-                <div class="bg-brand-black/50 border border-brand-red/10 p-3 rounded-lg text-xs max-w-[85%] self-start">
-                    <p class="text-brand-textGray">Salut ! Je suis l'assistant virtuel d'<strong>ORYZE</strong>. Je suis là pour t'aider à comprendre comment concevoir et lancer tes premiers produits digitaux. 🌍</p>
-                </div>
-                <div class="bg-brand-black/50 border border-brand-red/10 p-3 rounded-lg text-xs max-w-[85%] self-start">
-                    <p class="text-brand-textGray">Voici quelques questions fréquentes que tu peux me poser en écrivant ci-dessous ou en cliquant dessus :</p>
-                </div>
-            </div>
-
-            <!-- Suggestions rapides d'aide -->
-            <div class="p-2 bg-brand-black/20 overflow-x-auto whitespace-nowrap flex gap-1.5 border-t border-brand-red/10 text-xs shrink-0 select-none scrollbar-none">
-                <button type="button" onclick="askAI('Combien coûte l\'accompagnement ?')" class="px-3 py-1 bg-brand-black hover:bg-brand-red/25 border border-brand-red/15 rounded-full text-brand-textGray hover:text-white transition-colors shrink-0 text-[11px]">💰 Accompagnement / Prix</button>
-                <button type="button" onclick="askAI('Où télécharger le guide gratuit ?')" class="px-3 py-1 bg-brand-black hover:bg-brand-red/25 border border-brand-red/15 rounded-full text-brand-textGray hover:text-white transition-colors shrink-0 text-[11px]">📘 Guide Gratuit</button>
-                <button type="button" onclick="askAI('Proposez-vous un partenariat ?')" class="px-3 py-1 bg-brand-black hover:bg-brand-red/25 border border-brand-red/15 rounded-full text-brand-textGray hover:text-white transition-colors shrink-0 text-[11px]">🔥 Collaboration</button>
-            </div>
-
-            <!-- Formulaire de soumission du Chat (sécurisé avec maxLength) -->
-            <form id="ai-chat-form" class="p-3 bg-brand-black border-t border-brand-red/15 flex gap-2">
-                <input type="text" id="ai-input" required maxlength="100" class="flex-grow bg-brand-dark border border-brand-red/15 rounded-md px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-red" placeholder="Tape ton message...">
-                <button type="submit" class="bg-brand-red hover:bg-red-700 text-white w-8 h-8 rounded-md flex items-center justify-center transition-colors">
-                    <i class="fa-solid fa-paper-plane text-xs"></i>
-                </button>
-            </form>
-        </div>
+      </footer>
     </div>
+  );
+}
 
-    <!-- Scripts -->
-    <script>
+// ==========================================
+// SECTIONS
+// ==========================================
+
+function HeroSection() {
+  const handleScrollToPricing = () => {
+    document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <section className="relative w-full pt-16 pb-24 px-4 overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-yellow-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+      
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
+        <div className="text-left flex flex-col items-start">
+          <div className="inline-block px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-sm font-bold mb-6 animate-pulse flex items-center shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+            <Zap size={16} className="mr-2" fill="currentColor" />
+            Le réveil commence ici.
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-6">
+            Arrêtez de gaspiller votre <span className={`${THEME.textPrimary} relative inline-block`}>énergie vitale
+              <svg className="absolute w-full h-3 -bottom-1 left-0 text-yellow-500/30" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="4" fill="transparent"/></svg>
+            </span> et détruisez vos blocages.
+          </h1>
+          <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-lg leading-relaxed">
+            Distractions des écrans, scroll infini sur les réseaux sociaux, procrastination... Chaque jour, vous dissipez l'attention indispensable pour accomplir vos rêves et vos études. Il est temps d'adopter une autodiscipline saine et forte.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <button 
+              onClick={handleScrollToPricing}
+              className={`${THEME.primary} ${THEME.primaryHover} text-slate-900 text-lg font-black py-4 px-8 rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-2`}
+            >
+              <span>Je veux reprendre le contrôle</span>
+              <ChevronRight size={24} />
+            </button>
+          </div>
+          <div className="mt-6 flex items-center space-x-4 text-sm text-slate-400">
+            <div className="flex -space-x-2">
+              <img className="w-8 h-8 rounded-full border-2 border-slate-900" src="https://i.pravatar.cc/100?img=33" alt="Utilisateur" />
+              <img className="w-8 h-8 rounded-full border-2 border-slate-900" src="https://i.pravatar.cc/100?img=12" alt="Utilisateur" />
+              <img className="w-8 h-8 rounded-full border-2 border-slate-900" src="https://i.pravatar.cc/100?img=47" alt="Utilisateur" />
+            </div>
+            <p>Plus de <span className="text-white font-bold">500 jeunes</span> ont choisi la maîtrise</p>
+          </div>
+        </div>
+
+        <div className="relative flex justify-center items-center">
+          <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl border border-slate-700 transform rotate-1 hover:rotate-0 transition-transform duration-500">
+            <img 
+              src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=800" 
+              alt="Détermination et force mentale" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
+            <div className="absolute bottom-6 left-6 right-6">
+              <div className="bg-slate-900/90 backdrop-blur border border-slate-700 p-5 rounded-xl">
+                <p className="text-yellow-500 font-black text-xs mb-1 uppercase tracking-widest">L'Arsenal du Bâtisseur</p>
+                <p className="text-white font-semibold text-sm">Canaliser son attention en productivité et réussite scolaire.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PainPointsSection() {
+  return (
+    <section className={`${THEME.darker} w-full py-20 px-4 border-t border-slate-800`}>
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
+            Voici où s'échappe <span className="text-red-500">votre potentiel</span> tous les jours :
+          </h2>
+          <p className="text-slate-400 max-w-2xl mx-auto">
+            Chaque fois que vous cédez à la distraction instantanée des algorithmes, vous perdez du temps précieux pour votre avenir.
+          </p>
+        </div>
         
-        /**
-         * Assainit une chaîne de caractères pour empêcher l'exécution de scripts XSS
-         * @param {string} str
-         * @returns {string}
-         */
-        function sanitizeHTML(str) {
-            if (!str) return '';
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#x27;")
-                .replace(/\//g, "&#x2F;");
+        <div className="grid md:grid-cols-3 gap-8">
+          <PainCard 
+            icon={<Brain size={48} className="text-red-400" />}
+            title="Le Temps Perdu"
+            desc="Les jeux mobiles, les vidéos courtes et les notifications constantes siphonnent votre attention. Vous manquez de temps pour vos passions réelles, votre sport et vos études."
+          />
+          <PainCard 
+            icon={<Zap size={48} className="text-red-400" />}
+            title="La Procrastination"
+            desc="Vous remettez toujours vos devoirs et projets importants au lendemain. Le stress s'accumule inutilement et vous perdez confiance en vos capacités."
+          />
+          <PainCard 
+            icon={<Target size={48} className="text-red-400" />}
+            title="Le Manque de Focus"
+            desc="Habitué à recevoir des récompenses immédiates sur les écrans, votre cerveau peine à faire des efforts constants et durables pour le long terme."
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ValuePropositionSection() {
+  return (
+    <section className="w-full py-20 px-4 bg-slate-900/50">
+      <div className="max-w-4xl mx-auto text-center">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-8">
+          La clé d'un avenir brillant et autonome :
+        </h2>
+        <div className="bg-slate-950 border border-slate-800 rounded-2xl p-8 md:p-10 shadow-xl text-left">
+          <p className="text-lg text-slate-300 leading-relaxed mb-6">
+            <span className="text-yellow-500 font-bold">Votre attention est votre plus grande richesse.</span> Vous possédez en vous une force d'apprentissage, d'énergie physique et de création immense.
+          </p>
+          <p className="text-lg text-slate-300 leading-relaxed mb-6">
+            Le piège de notre époque est de la disperser dans des divertissements éphémères et passifs qui ne vous apportent rien d'autre que de la fatigue mentale et du regret.
+          </p>
+          <div className="border-l-4 border-yellow-500 pl-6 my-8">
+            <p className="text-xl font-bold text-white italic">
+              "Ceux qui préparent leur avenir dès aujourd'hui apprennent à équilibrer leur vie : du sport régulier pour le corps, de la lecture enrichissante pour l'esprit, et une planification claire pour atteindre de grands buts."
+            </p>
+          </div>
+          <p className="text-lg text-slate-300 leading-relaxed">
+            Ce pack vous propose un **plan d'action sain et structuré** pour prendre de bonnes habitudes, organiser vos journées de manière équilibrée (sommeil, sport, études) et libérer votre plein potentiel sur 30 jours.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProductsSection() {
+  return (
+    <section className="w-full py-24 px-4 max-w-6xl mx-auto relative">
+      <div className="text-center mb-16">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">Votre Guide de Progrès : <span className={THEME.textPrimary}>Le Pack Complet</span></h2>
+        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+          Trois outils complémentaires pour installer une discipline saine et valorisante.
+        </p>
+      </div>
+      
+      <div className="grid md:grid-cols-3 gap-8">
+        <ProductCard 
+          image="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600"
+          icon={<BookOpen size={32} className={THEME.textPrimary} />}
+          title="Le Produit Maître"
+          subtitle="Ebook Fondateur"
+          name="« Le Réveil du Bâtisseur : De la Pulsion à la Puissance »"
+          desc="Découvrez comment fonctionne votre concentration, comment vous détacher de la dépendance aux écrans et comment transformer vos impulsions quotidiennes en réussite concrète."
+        />
+        <ProductCard 
+          image="https://images.unsplash.com/photo-1495567720989-cebdbdd97913?auto=format&fit=crop&q=80&w=600"
+          icon={<Sun size={32} className={THEME.textPrimary} />}
+          title="Bonus Exclusif 1"
+          subtitle="Ebook Routine"
+          name="« La Routine Matinale du Bâtisseur »"
+          desc="Le matin décide de votre journée. Apprenez à préparer vos matinées pour être en pleine forme (sport, hydratation, planification saine des devoirs)."
+        />
+        <ProductCard 
+          image="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80&w=600"
+          icon={<Calendar size={32} className={THEME.textPrimary} />}
+          title="Bonus Exclusif 2"
+          subtitle="Outil de Suivi"
+          name="Le « Tracker des 30 Jours »"
+          desc="Une grille visuelle simple et stimulante à remplir chaque jour pour mesurer vos progrès dans vos lectures, votre sport et votre travail."
+        />
+      </div>
+    </section>
+  );
+}
+
+function PricingSection() {
+  return (
+    <section id="pricing-section" className={`${THEME.darker} w-full py-24 px-4 text-center border-t border-b border-slate-800 relative overflow-hidden`}>
+      <div className="absolute top-0 right-0 -mr-40 -mt-40 w-96 h-96 bg-yellow-500/10 rounded-full blur-[100px]"></div>
+
+      <div className="max-w-4xl mx-auto relative z-10">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">Investissez dans votre <span className={THEME.textPrimary}>réussite</span></h2>
+        <p className="text-xl text-slate-400 mb-12">Prenez dès aujourd'hui les clés d'une vie plus équilibrée et productive.</p>
+        
+        <div className="bg-slate-900 border-2 border-yellow-500 rounded-3xl p-8 md:p-12 shadow-[0_0_50px_rgba(234,179,8,0.15)] transform transition-transform hover:scale-[1.02] duration-300 max-w-2xl mx-auto relative overflow-hidden">
+          <div className="absolute top-0 right-0 bg-yellow-500 text-slate-900 text-xs font-bold px-4 py-2 rounded-bl-xl uppercase tracking-wider">
+            Soutien et Progrès
+          </div>
+
+          <div className="text-sm font-bold text-yellow-500 uppercase tracking-widest mb-4">L'Arsenal complet du Bâtisseur</div>
+          
+          <div className="flex justify-center items-end mb-6 space-x-2">
+            <span className="text-7xl font-black text-white leading-none">4 999</span>
+            <span className="text-2xl font-bold text-slate-400 pb-2">FCFA</span>
+          </div>
+          
+          <div className="bg-slate-800/50 rounded-xl p-4 mb-8 text-left border border-slate-700/50">
+            <ul className="space-y-3">
+              <li className="flex items-center text-slate-300"><CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={20} /> Ebook Fondateur "Le Réveil du Bâtisseur"</li>
+              <li className="flex items-center text-slate-300"><CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={20} /> Guide "La Routine Matinale de Victoire"</li>
+              <li className="flex items-center text-slate-300"><CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={20} /> Le Tracker de Progrès en PDF</li>
+              <li className="flex items-center text-slate-300"><CheckCircle2 className="text-yellow-500 mr-3 shrink-0" size={20} /> Accès instantané dans votre boîte mail</li>
+            </ul>
+          </div>
+          
+          <a 
+            href={PAYMENT_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`w-full ${THEME.primary} ${THEME.primaryHover} text-slate-900 text-xl md:text-2xl font-black py-5 px-8 rounded-xl shadow-[0_10px_20px_rgba(234,179,8,0.3)] transition-all flex justify-center items-center space-x-3 transform hover:scale-105`}
+          >
+            <Zap size={28} fill="currentColor" />
+            <span>Obtenir le pack</span>
+          </a>
+          
+          <p className="text-xs text-slate-500 mt-6 italic">
+            * Validation sécurisée. Paiement mobile money et cartes acceptés. Le prix s'adapte automatiquement à votre devise selon votre localisation.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ReviewsSection() {
+  return (
+    <section className="w-full py-24 px-4 bg-slate-900 relative">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-center text-white mb-16">
+          Ils ont fait le choix de <span className={THEME.textPrimary}>l'organisation et de la discipline</span>
+        </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative">
+            <Quote className="absolute top-6 right-6 text-slate-700/50" size={60} />
+            <div className="flex text-yellow-500 mb-6 relative z-10">
+              <Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" />
+            </div>
+            <p className="text-slate-300 italic mb-8 flex-grow relative z-10">
+              "Comprendre comment fonctionne mon attention et apprendre à poser mon téléphone a tout changé pour mes études. Je suis bien plus tranquille, organisé et performant."
+            </p>
+            <div className="flex items-center space-x-4">
+              <img src="https://i.pravatar.cc/150?u=marc" alt="Marc D." className="w-12 h-12 rounded-full border-2 border-slate-600" />
+              <div>
+                <div className="font-bold text-white text-lg">Marc D.</div>
+                <div className="text-slate-500 text-sm">A repris le sport & l'écriture</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative">
+            <Quote className="absolute top-6 right-6 text-slate-700/50" size={60} />
+            <div className="flex text-yellow-500 mb-6 relative z-10">
+              <Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" />
+            </div>
+            <p className="text-slate-300 italic mb-8 flex-grow relative z-10">
+              "Le tracker de 30 jours m'aide à faire mes devoirs et à lire tous les soirs de manière régulière sans remettre à plus tard. Un superbe investissement pour mon année scolaire."
+            </p>
+            <div className="flex items-center space-x-4">
+              <img src="https://i.pravatar.cc/150?u=cedric" alt="Cédric T." className="w-12 h-12 rounded-full border-2 border-slate-600" />
+              <div>
+                <div className="font-bold text-white text-lg">Cédric T.</div>
+                <div className="text-slate-500 text-sm">Lycéen & Passionné de code</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-slate-800 p-8 rounded-2xl border border-slate-700 flex flex-col relative md:col-span-2 lg:col-span-1">
+            <Quote className="absolute top-6 right-6 text-slate-700/50" size={60} />
+            <div className="flex text-yellow-500 mb-6 relative z-10">
+              <Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" /><Star size={20} fill="currentColor" />
+            </div>
+            <p className="text-slate-300 italic mb-8 flex-grow relative z-10">
+              "Je passais trop de temps devant les jeux vidéo sur mobile et j'étais souvent fatigué. Ce livre m'a aidé à instaurer des rituels matinaux et de lecture qui me font grandir sainement."
+            </p>
+            <div className="flex items-center space-x-4">
+              <img src="https://i.pravatar.cc/150?u=sophie" alt="Arnaud K." className="w-12 h-12 rounded-full border-2 border-slate-600" />
+              <div>
+                <div className="font-bold text-white text-lg">Arnaud K.</div>
+                <div className="text-slate-500 text-sm">Étudiant</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactSection() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState('idle');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    
+    try {
+      const response = await fetch("https://formspree.io/f/xeeykwob", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(formData)
+      });
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      setStatus('error');
+    } finally {
+      setTimeout(() => setStatus('idle'), 5000);
+    }
+  };
+
+  return (
+    <section className="w-full py-20 px-4 bg-slate-950">
+      <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-16">
+        <div className="flex-1">
+          <div className="mb-8">
+            <MessageCircle className="text-yellow-500 mb-4" size={48} />
+            <h2 className="text-3xl font-extrabold text-white mb-3">Une question avant d'agir ?</h2>
+            <p className="text-slate-400 text-lg">Notre équipe est à votre écoute. Écrivez-nous en toute discrétion et simplicité.</p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-5 bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <input type="text" name="name" placeholder="Votre Prénom" required className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 transition-colors" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+              <input type="email" name="email" placeholder="Votre Email" required className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 transition-colors" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+            </div>
+            <textarea name="message" placeholder="Votre question ou préoccupation..." required rows={5} className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-white focus:outline-none focus:border-yellow-500 resize-none transition-colors" value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} />
+            <button type="submit" disabled={status === 'loading'} className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-6 rounded-xl transition-colors flex justify-center items-center space-x-2">
+              {status === 'loading' ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} />}
+              <span>{status === 'loading' ? 'Transmission en cours...' : 'Envoyer le message'}</span>
+            </button>
+            {status === 'success' && <div className="bg-green-900/50 border border-green-500/50 text-green-300 p-4 rounded-xl text-center mt-4 font-medium flex items-center justify-center"><CheckCircle2 className="mr-2" size={20}/> Message envoyé avec succès !</div>}
+            {status === 'error' && <div className="bg-red-900/50 border border-red-500/50 text-red-300 p-4 rounded-xl text-center mt-4 font-medium">Une erreur est survenue. Veuillez réessayer.</div>}
+          </form>
+        </div>
+
+        <div className="lg:w-1/3 flex flex-col justify-center">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-3xl border border-slate-700 text-center shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-2xl"></div>
+            <div className="bg-green-500/20 p-5 rounded-full inline-block mb-6 relative z-10 border border-green-500/30">
+              <Phone size={40} className="text-green-500" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4 relative z-10">Discrétion & Aide</h3>
+            <p className="text-slate-300 mb-8 relative z-10 leading-relaxed">
+              Une hésitation ? Échangez directement avec un membre de notre équipe sur WhatsApp en toute discrétion.
+            </p>
+            <a 
+              href={`https://wa.me/${PHONE_NUMBER.replace('+', '')}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-4 px-6 rounded-xl transition-all hover:-translate-y-1 flex justify-center items-center space-x-3 w-full relative z-10 shadow-lg shadow-green-900/50"
+            >
+              <Phone size={24} />
+              <span>Discuter sur WhatsApp</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ==========================================
+// COMPOSANTS UI MINEURS
+// ==========================================
+
+function PainCard({ icon, title, desc }) {
+  return (
+    <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 text-center flex flex-col items-center hover:border-slate-600 transition-colors duration-300 shadow-lg">
+      <div className="bg-red-500/10 p-5 rounded-full mb-6 border border-red-500/20 shadow-[0_0_20px_rgba(248,113,113,0.1)]">
+        {icon}
+      </div>
+      <h3 className="text-2xl font-bold text-white mb-4">{title}</h3>
+      <p className="text-slate-400 leading-relaxed">{desc}</p>
+    </div>
+  );
+}
+
+function ProductCard({ image, icon, title, subtitle, name, desc }) {
+  return (
+    <div className="bg-slate-800 rounded-3xl border border-slate-700 flex flex-col overflow-hidden hover:-translate-y-2 transition-transform duration-300 shadow-xl group">
+      <div className="h-48 w-full overflow-hidden relative">
+        <img src={image} alt={subtitle} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-800 to-transparent"></div>
+        <div className="absolute bottom-4 left-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700">
+          {icon}
+        </div>
+      </div>
+      <div className="p-8 flex flex-col flex-grow">
+        <div className="text-yellow-500 font-bold text-sm mb-2 uppercase tracking-widest">{title}</div>
+        <div className="text-white font-extrabold text-2xl mb-2">{subtitle}</div>
+        <p className="text-slate-300 font-bold mb-4">{name}</p>
+        <p className="text-slate-400 text-sm leading-relaxed mt-auto">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// CHATBOT IA GEMINI (VERSION AMÉLIORÉE)
+// ==========================================
+function Chatbot() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { id: 1, text: "Salut Bâtisseur ! Je suis l'IA de l'Académie. Comment puis-je t'aider à vaincre la procrastination, gérer ton attention et reprogrammer ton énergie aujourd'hui ?", sender: 'ai' }
+  ]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const quickQuestions = [
+    { text: "🎯 Comment vaincre la distraction ?", query: "Comment puis-je vaincre la distraction et rester concentré ?" },
+    { text: "📦 Que contient exactement le pack ?", query: "Qu'est-ce qui est inclus dans le pack complet ?" },
+    { text: "⚡ Comment ça marche après l'achat ?", query: "Comment est-ce que je reçois le pack après avoir payé ?" },
+  ];
+
+  useEffect(() => { 
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); 
+    }
+  }, [messages, isTyping, isOpen]);
+
+  const handleSendMessage = async (textToSend) => {
+    if (!textToSend.trim()) return;
+    
+    setMessages(prev => [...prev, { id: Date.now(), text: textToSend, sender: 'user' }]);
+    setIsTyping(true);
+
+    try {
+      const aiResponse = await fetchGeminiResponse(textToSend, messages.slice(-4));
+      setMessages(prev => [...prev, { id: Date.now(), text: aiResponse, sender: 'ai' }]);
+    } catch (error) {
+      setMessages(prev => [
+        ...prev, 
+        { 
+          id: Date.now(), 
+          text: "Désolé Bâtisseur, une micro-coupure réseau est survenue. N'hésite pas à réitérer ta question dans quelques instants !", 
+          sender: 'ai' 
         }
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
 
-        /**
-         * Valide un format d'adresse e-mail strict
-         * @param {string} email
-         * @returns {boolean}
-         */
-        function isValidEmail(email) {
-            const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            return re.test(String(email).toLowerCase());
-        }
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (!input.trim() || isTyping) return;
+    handleSendMessage(input);
+    setInput('');
+  };
 
-        /* ==========================================
-           LOGIQUE ET CONFIGURATION DU FORMULAIRE D'AVIS (LocalStorage & Formspree)
-           ========================================== */
-        const feedbackForm = document.getElementById('feedback-form');
-        const formSuccessMsg = document.getElementById('form-success-msg');
-        const formSuccessText = document.getElementById('form-success-text');
-        const testimonialsGrid = document.getElementById('testimonials-grid');
-        const submitBtn = document.getElementById('feedback-submit-btn');
-        const encouragementText = document.getElementById('encouragement-text');
+  const handleQuickQuestionClick = (queryText) => {
+    if (isTyping) return;
+    handleSendMessage(queryText);
+  };
 
-        // Cooldown anti-spam
-        let isCooldown = false;
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      {!isOpen && (
+        <button 
+          onClick={() => setIsOpen(true)} 
+          className={`${THEME.primary} ${THEME.primaryHover} text-slate-900 p-4 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] transform transition-all hover:scale-110 flex items-center justify-center animate-bounce`}
+        >
+          <MessageCircle size={32} />
+        </button>
+      )}
 
-        // Charger les avis depuis le LocalStorage
-        function loadTestimonials() {
-            testimonialsGrid.innerHTML = '';
-            const stored = localStorage.getItem('oryze_testimonials');
-            let testimonials = stored ? JSON.parse(stored) : [];
+      {isOpen && (
+        <div className="bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl w-[350px] sm:w-[400px] flex flex-col h-[550px] max-h-[85vh] overflow-hidden">
+          <div className={`${THEME.primary} text-slate-900 p-4 flex justify-between items-center`}>
+            <div className="flex items-center space-x-3">
+              <div className="bg-slate-900 text-yellow-500 p-2 rounded-full">
+                <Brain size={20} />
+              </div>
+              <div>
+                <span className="font-extrabold text-lg block leading-tight">IA Bâtisseur</span>
+                <span className="text-[11px] font-medium opacity-80 flex items-center">
+                  <Sparkles size={10} className="mr-1 animate-pulse" /> En ligne • Conseils instantanés
+                </span>
+              </div>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="hover:bg-yellow-600/50 p-2 rounded-full transition-colors"><X size={24} /></button>
+          </div>
 
-            if (testimonials.length === 0) {
-                encouragementText.textContent = "Sois le premier à partager ton expérience 🌍";
-                encouragementText.classList.remove('hidden');
-            } else {
-                encouragementText.textContent = "Ton avis aide la communauté à grandir et à passer à l'action.";
-                testimonials.forEach(item => {
-                    renderTestimonialCard(item);
-                });
-            }
-        }
-
-        // Rendu visuel d'une carte de témoignage
-        function renderTestimonialCard(item) {
-            const initial = item.name.charAt(0).toUpperCase();
-            const newCard = document.createElement('div');
-            newCard.className = "bg-brand-dark p-6 rounded-lg border border-brand-red/10 hover-glow transition-all duration-300 flex flex-col justify-between animate-fade-in";
-            newCard.innerHTML = `
-                <div>
-                    <div class="flex items-center gap-1 text-brand-red mb-4">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                    <p class="text-brand-textGray italic text-sm sm:text-base mb-6">"${item.text}"</p>
+          <div className="flex-1 p-5 overflow-y-auto space-y-5 bg-slate-950/50">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] p-4 rounded-2xl text-[15px] leading-relaxed shadow-md ${msg.sender === 'user' ? 'bg-yellow-500 text-slate-900 font-medium rounded-br-sm' : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-sm'}`}>
+                  {msg.text}
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center font-bold text-white">${initial}</div>
-                    <div>
-                        <h4 class="font-bold text-white text-sm">${item.name}</h4>
-                        <p class="text-xs text-brand-red">Membre Vérifié</p>
-                    </div>
+              </div>
+            ))}
+            
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="bg-slate-800 text-slate-400 p-4 rounded-2xl rounded-bl-sm flex space-x-2 border border-slate-700">
+                  <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2.5 h-2.5 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                 </div>
-            `;
-            testimonialsGrid.insertBefore(newCard, testimonialsGrid.firstChild);
-        }
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
-        // Enregistrer un nouvel avis
-        function saveTestimonial(name, text) {
-            const stored = localStorage.getItem('oryze_testimonials');
-            let testimonials = stored ? JSON.parse(stored) : [];
-            const newItem = { name, text, date: new Date().getTime() };
-            testimonials.push(newItem);
-            localStorage.setItem('oryze_testimonials', JSON.stringify(testimonials));
-            loadTestimonials();
-        }
+          <div className="p-3 bg-slate-900/80 border-t border-slate-800 flex flex-col space-y-1.5">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider px-1">Questions fréquentes :</span>
+            <div className="flex flex-wrap gap-1.5">
+              {quickQuestions.map((q, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleQuickQuestionClick(q.query)}
+                  disabled={isTyping}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium py-1.5 px-3 rounded-full border border-slate-700 transition-colors text-left max-w-full truncate disabled:opacity-50"
+                >
+                  {q.text}
+                </button>
+              ))}
+            </div>
+          </div>
 
-        feedbackForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (isCooldown) {
-                formSuccessText.textContent = "Veuillez patienter quelques instants avant de renvoyer un avis.";
-                formSuccessMsg.className = "mt-4 p-4 bg-amber-950/40 border border-amber-500/30 text-amber-300 rounded-md text-sm flex items-center gap-2";
-                formSuccessMsg.classList.remove('hidden');
-                return;
-            }
-
-            const rawName = document.getElementById('review-name').value.trim();
-            const rawEmail = document.getElementById('review-email').value.trim();
-            const rawText = document.getElementById('review-text').value.trim();
-
-            if (!rawName || !rawEmail || !rawText) {
-                formSuccessText.textContent = "Tous les champs requis (*) doivent être remplis.";
-                formSuccessMsg.className = "mt-4 p-4 bg-red-950/40 border border-red-500/30 text-red-300 rounded-md text-sm flex items-center gap-2";
-                formSuccessMsg.classList.remove('hidden');
-                return; 
-            }
-
-            if (!isValidEmail(rawEmail)) {
-                formSuccessText.textContent = "Format de l'adresse email invalide.";
-                formSuccessMsg.className = "mt-4 p-4 bg-red-950/40 border border-red-500/30 text-red-300 rounded-md text-sm flex items-center gap-2";
-                formSuccessMsg.classList.remove('hidden');
-                return;
-            }
-
-            const name = sanitizeHTML(rawName);
-            const text = sanitizeHTML(rawText);
-
-            isCooldown = true;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `Envoi en cours... <i class="fa-solid fa-spinner animate-spin"></i>`;
-
-            // Sauvegarde locale et affichage immédiat
-            saveTestimonial(name, text);
-
-            // Transmission à Formspree
-            const formData = new FormData(feedbackForm);
-            
-            fetch(feedbackForm.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                submitBtn.innerHTML = `Publier mon avis <i class="fa-solid fa-paper-plane"></i>`;
-                submitBtn.disabled = false;
-                
-                if (response.ok) {
-                    formSuccessText.textContent = "Avis partagé avec succès ! Ton message a été enregistré et notifié à Oryze.";
-                    formSuccessMsg.className = "mt-4 p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-md text-sm flex items-center gap-2";
-                    formSuccessMsg.classList.remove('hidden');
-                    feedbackForm.reset();
-                } else {
-                    formSuccessText.textContent = "Témoignage enregistré localement !";
-                    formSuccessMsg.className = "mt-4 p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-md text-sm flex items-center gap-2";
-                    formSuccessMsg.classList.remove('hidden');
-                    feedbackForm.reset();
-                }
-                
-                setTimeout(() => { isCooldown = false; }, 5000);
-            })
-            .catch(error => {
-                submitBtn.innerHTML = `Publier mon avis <i class="fa-solid fa-paper-plane"></i>`;
-                submitBtn.disabled = false;
-                
-                formSuccessText.textContent = "Témoignage enregistré localement !";
-                formSuccessMsg.className = "mt-4 p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-md text-sm flex items-center gap-2";
-                formSuccessMsg.classList.remove('hidden');
-                feedbackForm.reset();
-                
-                setTimeout(() => { isCooldown = false; }, 5000);
-            });
-            
-            setTimeout(() => {
-                formSuccessMsg.classList.add('hidden');
-            }, 8000);
-        });
-
-        // Charger au démarrage
-        document.addEventListener('DOMContentLoaded', loadTestimonials);
-
-
-        /* ==========================================
-           GESTION DU BOUTON DE RETOUR EN HAUT (BACK TO TOP)
-           ========================================== */
-        const btnBackToTop = document.getElementById('btn-back-to-top');
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 400) {
-                btnBackToTop.classList.remove('opacity-0', 'pointer-events-none');
-                btnBackToTop.classList.add('opacity-100');
-            } else {
-                btnBackToTop.classList.remove('opacity-100');
-                btnBackToTop.classList.add('opacity-0', 'pointer-events-none');
-            }
-        });
-
-        btnBackToTop.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-
-        /* ==========================================
-           LOGIQUE DE L'ASSISTANT IA INTELLIGENT SÉCURISÉ
-           ========================================== */
-        const aiChatWidget = document.getElementById('ai-chat-widget');
-        const aiChatBubble = document.getElementById('ai-chat-bubble');
-        const aiChatTrigger = document.getElementById('ai-chat-trigger');
-        const aiChatContainer = document.getElementById('ai-chat-container');
-        const aiChatClose = document.getElementById('ai-chat-close');
-        const aiIconOpen = document.getElementById('ai-icon-open');
-        const aiIconClose = document.getElementById('ai-icon-close');
-        const aiForm = document.getElementById('ai-chat-form');
-        const aiInput = document.getElementById('ai-input');
-        const aiMessages = document.getElementById('ai-chat-messages');
-
-        // Afficher la bulle d'aide de bienvenue après 4 secondes
-        setTimeout(() => {
-            if (aiChatBubble) {
-                aiChatBubble.classList.remove('scale-0');
-                aiChatBubble.classList.add('scale-100');
-            }
-        }, 4000);
-
-        // Faire disparaître la bulle d'accueil d'elle-même après 12 secondes
-        setTimeout(() => {
-            if (aiChatBubble) aiChatBubble.classList.add('scale-0');
-        }, 12000);
-
-        // Ouvrir ou fermer le widget de chat
-        function toggleAIChat() {
-            const isOpen = !aiChatContainer.classList.contains('scale-0');
-            if (isOpen) {
-                aiChatContainer.classList.add('scale-0', 'pointer-events-none');
-                aiIconClose.classList.add('hidden');
-                aiIconOpen.classList.remove('hidden');
-            } else {
-                aiChatContainer.classList.remove('scale-0', 'pointer-events-none');
-                aiIconClose.classList.remove('hidden');
-                aiIconOpen.classList.add('hidden');
-                if (aiChatBubble) aiChatBubble.classList.add('scale-0');
-            }
-        }
-
-        aiChatTrigger.addEventListener('click', toggleAIChat);
-        aiChatClose.addEventListener('click', toggleAIChat);
-
-        // Lancer l'analyse et la réponse sécurisée du robot de discussion (Base de connaissances mise à jour)
-        function askAI(question) {
-            const sanitizedQuestion = sanitizeHTML(question);
-
-            const userMsg = document.createElement('div');
-            userMsg.className = "bg-brand-red text-white p-3 rounded-lg text-xs max-w-[85%] self-end shadow-md animate-fade-in";
-            userMsg.textContent = sanitizedQuestion;
-            aiMessages.appendChild(userMsg);
-            aiMessages.scrollTop = aiMessages.scrollHeight;
-
-            const typingIndicator = document.createElement('div');
-            typingIndicator.className = "bg-brand-black/50 border border-brand-red/10 p-3 rounded-lg text-xs max-w-[85%] self-start flex gap-1 items-center italic text-brand-textGray";
-            typingIndicator.innerHTML = `<span>L'IA réfléchit</span><span class="animate-bounce">.</span><span class="animate-bounce" style="animation-delay: 0.2s">.</span><span class="animate-bounce" style="animation-delay: 0.4s">.</span>`;
-            aiMessages.appendChild(typingIndicator);
-            aiMessages.scrollTop = aiMessages.scrollHeight;
-
-            const qLower = sanitizedQuestion.toLowerCase();
-            let replyText = "Je ne suis pas sûr de comprendre ta question. Écris directement à Oryze sur WhatsApp, il te répond sous 2h ! 😊";
-
-            if (qLower.includes("accompagnement") || qLower.includes("coaching")) {
-                replyText = "Super choix ! Clique sur le bouton rouge 'Demander un accompagnement' en bas à droite pour contacter Oryze directement sur WhatsApp 👇";
-            } else if (qLower.includes("prix") || qLower.includes("combien")) {
-                replyText = "L'ebook de démarrage est 100% gratuit ! Pour les accompagnements personnalisés, contacte Oryze sur WhatsApp pour un tarif adapté à ta situation.";
-            } else if (qLower.includes("collaboration") || qLower.includes("partenariat")) {
-                replyText = "Oryze est ouvert aux collaborations ! Utilise le lien 'Collaborer avec moi' dans le footer pour lui envoyer ta proposition directement.";
-            } else if (qLower.includes("ebook") || qLower.includes("guide")) {
-                replyText = "Le Guide du Débutant est 100% gratuit ! Clique sur 'Télécharger gratuitement' pour l'obtenir maintenant 🎁";
-            }
-
-            setTimeout(() => {
-                typingIndicator.remove();
-                const aiMsg = document.createElement('div');
-                aiMsg.className = "bg-brand-black/50 border border-brand-red/10 p-3 rounded-lg text-xs max-w-[85%] self-start shadow-md";
-                aiMsg.innerHTML = `<p class="text-brand-textGray">${replyText}</p>`;
-                aiMessages.appendChild(aiMsg);
-                aiMessages.scrollTop = aiMessages.scrollHeight;
-            }, 800);
-        }
-
-        aiForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const text = aiInput.value.trim();
-            if (!text) return;
-            askAI(text);
-            aiInput.value = '';
-        });
-    </script>
-</body>
-</html>
+          <form onSubmit={handleFormSubmit} className="p-4 bg-slate-900 border-t border-slate-800 flex space-x-3">
+            <input 
+              type="text" 
+              value={input} 
+              onChange={(e) => setInput(e.target.value)} 
+              placeholder="Écris ton message ici..." 
+              className="flex-1 bg-slate-950 text-white border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-yellow-500 text-sm transition-colors" 
+            />
+            <button 
+              type="submit" 
+              disabled={!input.trim() || isTyping} 
+              className={`${THEME.primary} text-slate-900 p-3 rounded-xl disabled:opacity-50 transition-colors hover:bg-yellow-400`}
+            >
+              <Send size={20} />
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
